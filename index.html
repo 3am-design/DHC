@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The D. H. Chen Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Fira+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       00 — NAVIGATION
+       ============================================================ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+
+      <a href="#" class="nav__logo" aria-label="D. H. Chen Foundation home">
+        <img src="assets/icons/logo-nav.png" alt="D. H. Chen Foundation" class="nav__logo-img" />
+      </a>
+
+      <nav class="nav__menu" aria-label="Main navigation">
+        <a href="#" class="nav__link">Work</a>
+        <a href="#" class="nav__link">Impact</a>
+        <a href="#" class="nav__link">About</a>
+        <a href="#" class="nav__link">Connect</a>
+      </nav>
+
+      <div class="nav__actions">
+        <a href="#" class="nav__lang">中文</a>
+        <button class="nav__search-btn" aria-label="Search">
+          <img src="assets/icons/icon-search.svg" alt="" />
+        </button>
+        <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <img src="assets/icons/icon-hamburger.svg" alt="" />
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__mobile-menu" id="mobile-menu" aria-hidden="true">
+      <a href="#" class="nav__mobile-link">Work</a>
+      <a href="#" class="nav__mobile-link">Impact</a>
+      <a href="#" class="nav__mobile-link">About</a>
+      <a href="#" class="nav__mobile-link">Connect</a>
+      <a href="#" class="nav__mobile-link nav__mobile-link--lang">中文</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         01 — HERO
+         ============================================================ -->
+    <section class="hero" id="hero" aria-label="Hero">
+
+      <!-- Background blobs -->
+      <div class="hero__blob hero__blob--white-top"    aria-hidden="true"></div>
+      <div class="hero__blob hero__blob--orange-left"  aria-hidden="true"></div>
+      <div class="hero__blob hero__blob--white-right"  aria-hidden="true"></div>
+
+      <!-- 3D flying photos (script populates; falls back to the static set) -->
+      <div class="hero__scene" id="hero-scene" aria-hidden="true"></div>
+      <div class="hero__fog" aria-hidden="true"></div>
+
+      <!-- Scattered photos — static fallback (hidden when the 3D scene runs) -->
+      <div class="hero__photos" aria-hidden="true">
+        <div class="hero__photo hero__photo--1"><img src="assets/images/hero-photo-1.png" alt="" /></div>
+        <div class="hero__photo hero__photo--2"><img src="assets/images/hero-photo-2.png" alt="" /></div>
+        <div class="hero__photo hero__photo--3"><img src="assets/images/hero-photo-3.png" alt="" /></div>
+        <div class="hero__photo hero__photo--4"><img src="assets/images/hero-photo-4.png" alt="" /></div>
+        <div class="hero__photo hero__photo--5"><img src="assets/images/hero-photo-5.png" alt="" /></div>
+        <div class="hero__photo hero__photo--6"><img src="assets/images/hero-photo-6.png" alt="" /></div>
+        <div class="hero__photo hero__photo--7"><img src="assets/images/hero-photo-7.png" alt="" /></div>
+        <div class="hero__photo hero__photo--8"><img src="assets/images/hero-photo-8.png" alt="" /></div>
+      </div>
+
+      <!-- Orange decorative dots -->
+      <div class="hero__dot hero__dot--1" aria-hidden="true"></div>
+      <div class="hero__dot hero__dot--2" aria-hidden="true"></div>
+      <div class="hero__dot hero__dot--3" aria-hidden="true"></div>
+      <div class="hero__dot hero__dot--4" aria-hidden="true"></div>
+
+      <!-- Headline — centred in the upper portion -->
+      <div class="hero__headline-wrap">
+        <h1 class="hero__headline">
+          Building a <span class="text-orange">compassionate</span><br />
+          society through values,<br />
+          partnerships &amp; action.
+        </h1>
+      </div>
+
+      <!-- Logo mark + description — anchored near the bottom -->
+      <div class="hero__bottom">
+        <div class="hero__logomark">
+          <img src="assets/icons/logo-hero.svg" alt="D. H. Chen Foundation" />
+        </div>
+        <p class="hero__description">
+          The D. H. Chen Foundation advances compassion-based philanthropy through initiatives, partnerships and sector knowledge that respond to evolving social needs.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- Scroll indicator — sits across the hero/intro boundary (Figma) -->
+    <div class="hero__scroll" aria-hidden="true">
+      <div class="hero__scroll-dot"></div>
+      <div class="hero__scroll-line"></div>
+    </div>
+
+    <!-- Ambient background glows (Figma page-level blurs), anchored at
+         the hero/intro boundary and painted beneath every section -->
+    <div class="bg-blurs" aria-hidden="true">
+      <img src="assets/images/blur_01.png" alt="" class="bg-blur bg-blur--1" />
+      <img src="assets/images/blur_04.png" alt="" class="bg-blur bg-blur--2" />
+      <img src="assets/images/blur_03.png" alt="" class="bg-blur bg-blur--3" />
+      <img src="assets/images/blur_02.png" alt="" class="bg-blur bg-blur--4" />
+    </div>
+
+
+    <!-- ============================================================
+         02 — INTRO  (Our Foundation + The Challenge)
+         ============================================================ -->
+    <section class="intro" id="intro">
+
+      <!-- ── Our Foundation ──────────────────────────────────────────
+           Grid areas: desktop  label|headline / bullets|video
+                       mobile   label → headline → bullets → video  -->
+      <div class="intro__foundation">
+
+        <p class="label intro__label">Our Foundation</p>
+
+        <h2 class="intro__foundation-headline">
+          We are a Hong Kong family philanthropic trust, putting compassion into action with partners to address evolving social needs.
+        </h2>
+
+        <ul class="bullet-list intro__bullets">
+          <li class="bullet-list__item">Family philanthropic trust established in 1970</li>
+          <li class="bullet-list__item">Guided by compassion-based values</li>
+          <li class="bullet-list__item">Working through Institutes, initiatives &amp; partnerships</li>
+        </ul>
+
+        <div class="intro__video">
+          <img src="assets/images/video-thumbnail.png" alt="Foundation video" class="intro__video-thumb" />
+          <button class="intro__play-btn" aria-label="Play video">
+            <img src="assets/icons/icon-play.svg" alt="" />
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ── The Challenge ────────────────────────────────────────────
+           Flattened children so mobile can re-order:
+           label → headline → circles → body → button (Figma mobile)  -->
+      <div class="challenge">
+
+        <p class="label challenge__label">The Challenge</p>
+        <h2 class="challenge__headline">
+          Today's social challenges are often rooted in disconnection.
+        </h2>
+        <p class="challenge__body">
+          Across individuals, communities and the impact sector, we see a growing need to rebuild connection, trust and the conditions for meaningful change.
+        </p>
+        <a href="#" class="btn-circle challenge__btn">
+          <span class="btn-circle__ring">
+            <img src="assets/icons/icon-arrow.svg" alt="" class="btn-circle__arrow" />
+          </span>
+          <span class="btn-circle__label">Discover more</span>
+        </a>
+
+        <!-- Right: 3 overlapping circles -->
+        <div class="challenge__circles" aria-label="Three areas of disconnection">
+
+          <!-- Figma order: icon (top) → title (centre) → tag (bottom) -->
+          <div class="challenge__circle challenge__circle--1">
+            <div class="challenge__circle-content">
+              <img src="assets/icons/icon-self.svg" alt="" class="challenge__circle-icon" />
+              <h3 class="challenge__circle-title">Loss of meaning, hope, inner connection</h3>
+              <p class="challenge__circle-tag">Within the self</p>
+            </div>
+          </div>
+
+          <div class="challenge__circle challenge__circle--2">
+            <div class="challenge__circle-content">
+              <img src="assets/icons/icon-community.svg" alt="" class="challenge__circle-icon" />
+              <h3 class="challenge__circle-title">Social isolation, fragmented support, weakened trust</h3>
+              <p class="challenge__circle-tag">Between self and society</p>
+            </div>
+          </div>
+
+          <div class="challenge__circle challenge__circle--3">
+            <div class="challenge__circle-content">
+              <img src="assets/icons/icon-crowd.svg" alt="" class="challenge__circle-icon" />
+              <h3 class="challenge__circle-title">Good ideas struggle to grow, sustain &amp; scale</h3>
+              <p class="challenge__circle-tag">Within the impact sector</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ============================================================
+         03 — PILLARS  (Two pillars + Our Approach)
+         ============================================================ -->
+    <section class="pillars" id="pillars">
+
+      <div class="pillars__heading-wrap">
+        <h2 class="pillars__heading">
+          Our work is shaped by<br />
+          two interconnected pillars
+        </h2>
+      </div>
+
+      <!-- Decorative arc SVG (inline so the stroke can draw on scroll) -->
+      <div class="pillars__arc" aria-hidden="true">
+        <svg viewBox="0 0 2009.85 1150.77" xmlns="http://www.w3.org/2000/svg">
+          <path id="arc-path" d="M1006.15,19.53s610.35-74.55,699.85,71.45-123.58,269.36-788.04,365.7C253.5,553.03.5,618.03.5,892.03s890,299,1193,124c347.92-247.57,303.95,454.15,816-57.89" fill="none" stroke="#ff6d2d" stroke-miterlimit="10"/>
+          <circle id="arc-dot" cx="1006.02" cy="19.78" r="5" fill="#ff6d2d"/>
+        </svg>
+      </div>
+
+      <!-- Two pillar cards -->
+      <div class="pillars__cards">
+
+        <article class="pillar-card pillar-card--issues">
+          <div class="pillar-card__text">
+            <h3 class="pillar-card__title">Issues-focused</h3>
+            <p class="pillar-card__body">
+              Addressing disconnection within the self, and between the self and society.
+            </p>
+            <ul class="bullet-list bullet-list--sm">
+              <li class="bullet-list__item">Mindful Living</li>
+              <li class="bullet-list__item">Wellbeing</li>
+              <li class="bullet-list__item">Education Excellence</li>
+            </ul>
+          </div>
+          <div class="pillar-card__illustration" aria-hidden="true">
+            <img src="assets/images/illustration-issues.svg" alt="" />
+          </div>
+        </article>
+
+        <article class="pillar-card pillar-card--sector">
+          <div class="pillar-card__text">
+            <h3 class="pillar-card__title">Sector-facing</h3>
+            <p class="pillar-card__body">
+              Supporting early to mid-stage social impact initiatives through compassion-based philanthropy.
+            </p>
+            <ul class="bullet-list bullet-list--sm">
+              <li class="bullet-list__item">Impact Strategy</li>
+              <li class="bullet-list__item">Above and Beyond</li>
+              <li class="bullet-list__item">D'Ventures</li>
+            </ul>
+          </div>
+          <div class="pillar-card__illustration" aria-hidden="true">
+            <img src="assets/images/illustration-sector.svg" alt="" />
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Our Approach -->
+      <div class="approach">
+        <p class="label label--center">Our Approach</p>
+
+        <!-- 5 staggered cards: 3 orange top row, 2 white bottom row -->
+        <div class="approach__cards">
+
+          <!-- Row 1 — orange, rotated -->
+          <div class="approach-card approach-card--orange approach-card--1">
+            <h3 class="approach-card__title">Listen deeply</h3>
+            <p class="approach-card__body">We begin by understanding people, communities and the realities behind emerging social needs.</p>
+          </div>
+
+          <div class="approach-card approach-card--orange approach-card--2">
+            <h3 class="approach-card__title">Co-create with partners</h3>
+            <p class="approach-card__body">We work alongside like-minded partners to shape responses that are grounded, relevant and compassionate.</p>
+          </div>
+
+          <div class="approach-card approach-card--orange approach-card--3">
+            <h3 class="approach-card__title">Support &amp; strengthen</h3>
+            <p class="approach-card__body">We bring together resources, knowledge and networks to help meaningful initiatives grow with resilience.</p>
+          </div>
+
+          <!-- Decorative bubbles + dots (positions from Figma) -->
+          <div class="approach__bubbles" aria-hidden="true">
+            <div class="pillar-bubble pillar-bubble--1"><img src="assets/images/bubble-1.png" alt="" /></div>
+            <div class="pillar-bubble pillar-bubble--2"><img src="assets/images/bubble-2.png" alt="" /></div>
+            <div class="pillar-bubble pillar-bubble--3"><img src="assets/images/bubble-3.png" alt="" /></div>
+            <div class="pillar-bubble pillar-bubble--4"><img src="assets/images/bubble-4.png" alt="" /></div>
+            <div class="pillar-bubble pillar-bubble--5"><img src="assets/images/bubble-5.png" alt="" /></div>
+            <div class="approach-dot approach-dot--orange approach-dot--1"></div>
+            <div class="approach-dot approach-dot--orange approach-dot--2"></div>
+            <div class="approach-dot approach-dot--orange approach-dot--3"></div>
+            <div class="approach-dot approach-dot--orange approach-dot--4"></div>
+            <div class="approach-dot approach-dot--white approach-dot--5"></div>
+            <div class="approach-dot approach-dot--white approach-dot--6"></div>
+          </div>
+
+          <!-- Row 2 — white, orange titles -->
+          <div class="approach-card approach-card--white approach-card--4">
+            <div class="approach-card__icon"><img src="assets/icons/icon-check.svg" alt="" /></div>
+            <h3 class="approach-card__title approach-card__title--orange">Learn through practice</h3>
+            <p class="approach-card__body approach-card__body--dark">We embrace learning by doing, turning experience, reflection and even challenges into shared insight.</p>
+          </div>
+
+          <div class="approach-card approach-card--white approach-card--5">
+            <div class="approach-card__icon"><img src="assets/icons/icon-check.svg" alt="" /></div>
+            <h3 class="approach-card__title approach-card__title--orange">Share knowledge for wider impact</h3>
+            <p class="approach-card__body approach-card__body--dark">We make learning visible, so compassion-based practices can inspire broader change across the sector.</p>
+          </div>
+
+        </div>
+
+        <div class="approach__cta">
+          <a href="#" class="btn-circle">
+            <span class="btn-circle__ring">
+              <img src="assets/icons/icon-arrow.svg" alt="" class="btn-circle__arrow" />
+            </span>
+            <span class="btn-circle__label">Discover more</span>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ============================================================
+         04 — NEWS
+         ============================================================ -->
+    <section class="news" id="news">
+
+      <h2 class="news__heading">
+        Compassion is not only a value.<br />
+        It is a way of working.
+      </h2>
+
+      <div class="news__filters" role="tablist" aria-label="Filter news by category">
+        <button class="news__filter news__filter--active" role="tab" aria-selected="true"  data-filter="all">All</button>
+        <button class="news__filter" role="tab" aria-selected="false" data-filter="learning">Learning</button>
+        <button class="news__filter" role="tab" aria-selected="false" data-filter="stories">Stories</button>
+        <button class="news__filter" role="tab" aria-selected="false" data-filter="news">News</button>
+      </div>
+
+      <!-- Carousel: side cards bleed off the edges -->
+      <div class="news__carousel-wrap" id="news-carousel-wrap">
+        <div class="news__carousel" id="news-carousel">
+
+          <article class="news-card news-card--1" data-category="learning">
+            <div class="news-card__image">
+              <img src="assets/images/news-1.png?v=2" alt="The D. H. Chen Foundation Scholarship Programme" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">The D. H. Chen Foundation Scholarship Programme</h3>
+              <p class="news-card__description">Investing Today, Impacting Tomorrow</p>
+              <p class="news-card__category">Education Excellence</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--2" data-category="stories">
+            <div class="news-card__image">
+              <img src="assets/images/news-2.png?v=2" alt="Community Changemaker Fellowship" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">Community Changemaker Fellowship</h3>
+              <p class="news-card__description">Cultivating Changemakers to Advance Social Inclusion</p>
+              <p class="news-card__category">Above &amp; Beyond Institute</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--3" data-category="news">
+            <div class="news-card__image">
+              <img src="assets/images/news-3.png?v=2" alt="Future Education in Action 2.0" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">Future Education in Action 2.0</h3>
+              <p class="news-card__description">Fostering Values-driven Life Exploration Education Through Cross-sector Collaboration</p>
+              <p class="news-card__category">Education Excellence</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--4" data-category="news">
+            <div class="news-card__image">
+              <img src="assets/images/news-4.png" alt="Youth ImpACT Award" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">Youth ImpACT Award</h3>
+              <p class="news-card__description">A Landmark Social Innovation Award for Youth to Promote and Cultivate Compassion</p>
+              <p class="news-card__category">Education Excellence</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--5" data-category="stories">
+            <div class="news-card__image">
+              <img src="assets/images/news-5.png" alt="Compassionate Social Good Community" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">Compassionate Social Good Community</h3>
+              <p class="news-card__description">Bringing the Social Good Community Closer</p>
+              <p class="news-card__category">Mindful Living</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--6" data-category="learning">
+            <div class="news-card__image">
+              <img src="assets/images/news-6.png" alt="Compassionate Children Programme" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">Compassionate Children Programme</h3>
+              <p class="news-card__description">Promoting Compassion-based Values in School-based Curriculum</p>
+              <p class="news-card__category">Mindful Living</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--7" data-category="stories">
+            <div class="news-card__image">
+              <img src="assets/images/news-7.png" alt="Shadowing the Golden Path" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">Shadowing the Golden Path</h3>
+              <p class="news-card__description">Supporting Carers' Wellbeing through Exercise and Self-rediscovery</p>
+              <p class="news-card__category">Wellbeing</p>
+            </div>
+          </article>
+
+          <article class="news-card news-card--8" data-category="news">
+            <div class="news-card__image">
+              <img src="assets/images/news-8.png" alt="NeuroCare Community Project" />
+            </div>
+            <div class="news-card__body">
+              <h3 class="news-card__title">NeuroCare Community Project</h3>
+              <p class="news-card__description">Transforming Alzheimer&rsquo;s Care Through Accessible Screening and Community Support</p>
+              <p class="news-card__category">Above and Beyond</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <div class="news__cta">
+        <a href="#" class="btn-circle">
+          <span class="btn-circle__ring">
+            <img src="assets/icons/icon-arrow.svg" alt="" class="btn-circle__arrow" />
+          </span>
+          <span class="btn-circle__label">Read more</span>
+        </a>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ============================================================
+       05 — FOOTER
+       ============================================================ -->
+  <footer class="footer" id="footer">
+
+    <!-- Decorative wave line — starts at the end of Pillars, sweeps through
+         News into the Footer (Figma "Vector 2"). Inlined as SVG so the path
+         can be stroke-animated on scroll later (stroke-dasharray/offset).  -->
+    <div class="footer__wave" aria-hidden="true">
+      <svg preserveAspectRatio="none" viewBox="0 0 2228.87 1555.14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path id="wave-path" d="M2129.03 76.1449C2113.03 68.1449 727.03 -135.855 425.03 164.145C123.03 464.145 787.03 614.145 1975.03 880.145C2925.43 1092.94 896.03 1230.14 818.03 1238.14C740.03 1246.14 619.03 1262.14 704.03 1304.14C789.03 1346.14 1014.43 1523.74 0.029955 1554.14" stroke="#ff6d2d" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div class="footer__gradient" aria-hidden="true"></div>
+
+    <div class="footer__inner">
+
+      <div class="footer__logo">
+        <img src="assets/icons/logo-footer.svg" alt="D. H. Chen Foundation" />
+      </div>
+
+      <div class="footer__col">
+        <nav class="footer__nav" aria-label="Footer navigation">
+          <a href="#" class="footer__nav-link">Partner with us</a>
+          <a href="#" class="footer__nav-link">Stay connected</a>
+          <a href="#" class="footer__nav-link">Join our team</a>
+        </nav>
+
+        <div class="footer__social">
+          <a href="#" class="footer__social-link" aria-label="LinkedIn">
+            <img src="assets/icons/icon-linkedin.svg" alt="LinkedIn" />
+          </a>
+          <a href="#" class="footer__social-link" aria-label="Instagram">
+            <img src="assets/icons/icon-instagram.svg" alt="Instagram" />
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer__legal-nav" aria-label="Legal navigation">
+        <a href="#" class="footer__legal-link">Privacy Policy</a>
+        <a href="#" class="footer__legal-link">Disclaimer</a>
+        <a href="#" class="footer__legal-link">Sitemap</a>
+        <a href="#" class="footer__legal-link">Accessibility</a>
+      </nav>
+
+    </div>
+
+    <div class="footer__copyright">
+      <p>
+        <span class="footer__copy-line">© 2026 The D. H. Chen Foundation. All rights reserved</span><span class="footer__copy-sep">&nbsp;&nbsp;|&nbsp;&nbsp;</span><span class="footer__copy-line"><a href="https://www.assembly.com.hk" class="footer__credit" target="_blank" rel="noopener">Website designed by Assembly</a></span>
+      </p>
+    </div>
+
+  </footer>
+
+  <!-- Custom cursor (desktop pointers only; script enables it) -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor__label">DISCOVER</span>
+    <img class="cursor__arrow" src="assets/icons/icon-arrow.svg" alt="" />
+  </div>
+
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

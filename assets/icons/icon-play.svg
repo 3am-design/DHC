@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="xMidYMid meet" width="83" height="83" overflow="visible" style="display: block;" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="play">
+<path id="Ellipse 34" d="M83 41.5C83 64.4198 64.4198 83 41.5 83C18.5802 83 0 64.4198 0 41.5C0 18.5802 18.5802 0 41.5 0C64.4198 0 83 18.5802 83 41.5Z" fill="var(--fill-0, #FF6900)"/>
+<g id="play 1" clip-path="url(#clip0_0_31)">
+<path id="Vector" d="M50.8675 40.846L38.8675 34.096C38.635 33.9655 38.3515 33.9685 38.122 34.102C37.891 34.237 37.75 34.483 37.75 34.75V48.25C37.75 48.517 37.891 48.763 38.122 48.898C38.239 48.9655 38.3695 49 38.5 49C38.626 49 38.7535 48.9685 38.8675 48.904L50.8675 42.154C51.103 42.0205 51.25 41.7715 51.25 41.5C51.25 41.2285 51.103 40.9795 50.8675 40.846Z" fill="var(--fill-0, white)"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_31">
+<rect width="15" height="15" fill="white" transform="translate(37 34)"/>
+</clipPath>
+</defs>
+</svg>

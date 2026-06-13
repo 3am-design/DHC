@@ -1,0 +1,1606 @@
+/* ================================================================
+   D. H. Chen Foundation — Stylesheet
+   Desktop: 1920px | 6-col | 50px margin | 40px gutter
+   Mobile:   440px | 4-col | 20px margin | 15px gutter
+   Breakpoint: 767px
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   CSS Variables
+   ---------------------------------------------------------------- */
+:root {
+  /* Colours */
+  --c-bg:      #fff2e9;
+  --c-white:   #ffffff;
+  --c-black:   #000000;
+  --c-orange:  #ff6900;
+
+  /* Fonts — Figma uses system Baskerville; Libre Baskerville is the web fallback */
+  --f-serif: Baskerville, 'Libre Baskerville', Georgia, serif;
+  --f-sans:  'Fira Sans', Arial, sans-serif;
+
+  /* Grid — desktop */
+  --gm:  50px;   /* margin */
+  --gg:  40px;   /* gutter */
+
+  /* Grid — mobile */
+  --gm-mob: 20px;
+  --gg-mob: 15px;
+
+  /* Transitions */
+  --ease: 0.25s ease;
+}
+
+
+/* ----------------------------------------------------------------
+   Reset
+   ---------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* html bg = white so the page visually ends where the footer's white ends
+   (otherwise the peach body bg shows in any canvas area past the content) */
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; background: var(--c-white); }
+html.lenis-on { scroll-behavior: auto; }   /* Lenis supplies the easing */
+/* Lenis recommended helpers */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+body { background: var(--c-bg); color: var(--c-black); font-family: var(--f-sans); overflow-x: hidden; }
+img  { display: block; max-width: 100%; height: auto; }
+a    { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; padding: 0; }
+ul   { list-style: none; }
+
+
+/* ----------------------------------------------------------------
+   Shared utilities
+   ---------------------------------------------------------------- */
+.text-orange { color: var(--c-orange); }
+
+/* Section label (small uppercase-ish medium text) */
+.label {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--c-black);
+}
+.label--center { text-align: center; }
+
+/* Bullet list with dot */
+.bullet-list { display: flex; flex-direction: column; gap: 30px; }
+.bullet-list__item {
+  position: relative;
+  padding-left: 20px;
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: 22px;
+  line-height: 30px;
+  color: var(--c-black);
+}
+.bullet-list__item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 11px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--c-black);
+}
+.bullet-list--sm { gap: 26px; }
+.bullet-list--sm .bullet-list__item { font-size: 20px; line-height: 26px; }
+
+/* Pillar cards use orange dots (Figma spec) */
+.pillar-card .bullet-list__item::before { background: var(--c-orange); }
+
+/* Circle CTA button — white circle; on hover it grows rightward
+   into a full rounded pill behind the label */
+.btn-circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 24px;        /* room inside the pill when expanded */
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--c-black);
+  cursor: pointer;
+}
+.btn-circle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
+  background: var(--c-white);
+  transition: width 0.35s ease, background-color 0.25s ease;
+}
+/* hover: the pill expands and the whole button goes orange with white text */
+.btn-circle:hover::before { width: 100%; background: var(--c-orange); }
+.btn-circle:hover { color: var(--c-white); }
+.btn-circle:hover .btn-circle__arrow { filter: brightness(0) invert(1); }
+.btn-circle__ring {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px; height: 38px;
+}
+.btn-circle__arrow { width: 15px; pointer-events: none; flex-shrink: 0; }
+.btn-circle__label { position: relative; }
+
+
+/* ----------------------------------------------------------------
+   Custom cursor — orange dot that morphs:
+   · links/buttons   → slightly larger ring
+   · news slider     → big circle with "DISCOVER"
+   · slider edges    → circle with an arrow (click = prev/next)
+   Enabled by script.js only on fine pointers (body.has-custom-cursor).
+   ---------------------------------------------------------------- */
+body.has-custom-cursor,
+body.has-custom-cursor a,
+body.has-custom-cursor button,
+body.has-custom-cursor .news__carousel-wrap { cursor: none; }
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2.5px solid var(--c-orange);   /* thick orange ring */
+  background: transparent;
+  display: none;                /* shown when the script enables it */
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform;
+  transition: width 0.22s ease, height 0.22s ease, opacity 0.25s ease,
+              background-color 0.1s ease, border-color 0.1s ease;
+}
+body.has-custom-cursor .cursor { display: flex; }
+
+.cursor__label {
+  position: absolute;
+  opacity: 0;
+  color: var(--c-white);
+  font-family: var(--f-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+.cursor__arrow {
+  position: absolute;
+  width: 18px;
+  opacity: 0;
+  filter: brightness(0) invert(1);   /* white arrow on the orange circle */
+  transition: opacity 0.2s ease;
+}
+
+/* magnetised onto a button — size is set inline to wrap the target */
+.cursor--magnet   { background: transparent; }
+
+/* nav links / 中文 / search use plain colour hovers (see NAVIGATION) */
+
+/* solid states over the news slider */
+.cursor--discover,
+.cursor--prev,
+.cursor--next     { background: var(--c-orange); border-color: var(--c-orange); }
+.cursor--discover { width: 96px; height: 96px; }
+.cursor--discover .cursor__label { opacity: 1; }
+.cursor--prev,
+.cursor--next     { width: 56px; height: 56px; }
+.cursor--prev .cursor__arrow { opacity: 1; transform: rotate(180deg); }
+.cursor--next .cursor__arrow { opacity: 1; }
+.cursor--hidden   { opacity: 0; }
+
+
+/* ----------------------------------------------------------------
+   Landing sequence (script-driven; no-JS users never see any of it)
+   logo splash → headline + dots → photos + bottom text → menu drop
+   ---------------------------------------------------------------- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: var(--c-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease;
+}
+.preloader img { height: 72px; width: auto; transition: opacity 0.5s ease; }
+.preloader.logo-out img { opacity: 0; }
+.preloader.out { opacity: 0; pointer-events: none; }
+
+html.lock-scroll { overflow: hidden !important; }
+
+/* staged hero entrance — `translate` composes with existing transforms.
+   The bottom block cascades internally: logomark → description → cue. */
+.hero__headline-wrap {
+  transition: opacity 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+              translate 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero__logomark {
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+              translate 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero__description {
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s,
+              translate 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+}
+.hero__scroll {
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+              translate 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
+}
+body.lp-h1 .hero__headline-wrap { opacity: 0; translate: 0 34px; }
+body.lp-h2 .hero__logomark,
+body.lp-h2 .hero__description,
+body.lp-h2 .hero__scroll       { opacity: 0; translate: 0 22px; }
+
+/* menu drops in from the top, logo → links → actions */
+.nav__logo    { transition: opacity 0.7s ease,        translate 0.7s ease; }
+.nav__menu    { transition: opacity 0.7s ease 0.12s,  translate 0.7s ease 0.12s; }
+.nav__actions { transition: opacity 0.7s ease 0.24s,  translate 0.7s ease 0.24s; }
+body.lp-nav .nav__logo,
+body.lp-nav .nav__menu,
+body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
+
+/* ----------------------------------------------------------------
+   Scroll reveal — content floats up as it enters the viewport;
+   stagger comes from per-element transition delays set by script.
+   ---------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  translate: 0 40px;
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+              translate 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+
+/* ================================================================
+   00 — NAVIGATION
+   ================================================================ */
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  transition: background var(--ease), box-shadow var(--ease);
+}
+/* Sticky state (Figma "Sticky"): white bar, 60px tall, thin grey rule
+   underneath; logo and type scale down slightly. */
+.nav--scrolled {
+  background: var(--c-white);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+.nav--scrolled .nav__inner    { height: 60px; }
+.nav--scrolled .nav__logo-img { height: 44px; }
+.nav--scrolled .nav__link     { font-size: 16px; }
+.nav--scrolled .nav__lang     { font-size: 13px; }
+.nav--scrolled .nav__search-btn img { width: 21px; height: 21px; }
+
+.nav__inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;  /* logo | MENU centred | actions */
+  align-items: center;
+  height: 74px;
+  padding: 0 var(--gm);
+  max-width: 1920px;
+  margin: 0 auto;
+  transition: height var(--ease);
+}
+
+/* Logo — left column of grid */
+.nav__logo { display: flex; align-items: center; }
+.nav__logo-img { height: 52px; width: auto; display: block; transition: height var(--ease); }
+
+/* Desktop menu — centre column of the 3-col grid */
+.nav__menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 71px;  /* matches Figma spacing between links */
+}
+.nav__link {
+  font-family: var(--f-sans);
+  font-size: 18px;
+  font-weight: 400;
+  white-space: nowrap;
+  transition: color var(--ease);
+}
+.nav__link:hover { color: var(--c-orange); }
+
+/* Actions — right column, right-aligned */
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 40px;   /* Figma: 中文 → search spacing */
+  justify-content: flex-end;
+}
+.nav__lang { font-family: var(--f-sans); font-size: 15px; transition: color var(--ease); }
+.nav__lang:hover { color: var(--c-orange); }
+
+/* Search button — round hit area; icon turns orange on hover */
+.nav__search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.nav__search-btn img {
+  width: 22px;
+  height: 22px;       /* force exact square — search viewBox is 29×29 */
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: filter var(--ease);
+}
+/* colorise the black icon to brand orange (#ff6900) */
+.nav__search-btn:hover img {
+  filter: invert(46%) sepia(89%) saturate(3098%) hue-rotate(359deg) brightness(102%) contrast(104%);
+}
+
+/* Hamburger — mobile only */
+.nav__hamburger {
+  display: none;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.nav__hamburger img {
+  width: 32px;
+  height: auto;
+  aspect-ratio: 39.5 / 10;  /* hamburger viewBox ratio */
+  display: block;
+  object-fit: contain;
+}
+
+/* Mobile menu drawer */
+.nav__mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: var(--c-bg);
+  padding: 16px var(--gm-mob) 24px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+.nav__mobile-menu--open { display: flex; }
+.nav__mobile-link {
+  font-family: var(--f-sans);
+  font-size: 20px;
+  font-weight: 400;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.nav__mobile-link:last-child { border-bottom: none; }
+.nav__mobile-link--lang { font-size: 16px; margin-top: 8px; }
+
+
+/* ================================================================
+   01 — HERO
+   ================================================================ */
+.hero {
+  position: relative;
+  /* first screen fills the browser height, clamped 600–1200px */
+  height: clamp(600px, 100vh, 1200px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 1000px;          /* depth for the 3D photo scene */
+}
+
+/* 3D flying photos — planes travel from deep space toward the viewer */
+.hero__scene {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: 1;
+}
+.hero__plane {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 194px;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+/* soft fog keeps the centre readable (brand peach, like the ref's mask) */
+.hero__fog {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center,
+              rgba(255, 242, 233, 0.95) 0%,
+              rgba(255, 242, 233, 0.4) 26%,
+              transparent 58%);
+  pointer-events: none;
+  z-index: 1;
+}
+/* flying orange dots — same flight as the photos, but tiny */
+.hero__plane--dot {
+  width: 22px;
+  height: 22px;
+  background: var(--c-orange);
+  box-shadow: none;
+}
+/* once the scene is running, the static photo/dot sets step aside */
+.hero--scene .hero__photos,
+.hero--scene .hero__dot { display: none; }
+
+/* Background blobs */
+.hero__blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero__blob--white-top {
+  width: 1000px; height: 1000px;
+  top: -7px; left: calc(50% + 79px - 500px);
+  background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%);
+}
+.hero__blob--orange-left {
+  width: 1736px; height: 1736px;
+  top: 267px; left: calc(50% - 1451px);
+  background: radial-gradient(circle, rgba(255,105,0,.3) 0%, transparent 70%);
+}
+.hero__blob--white-right {
+  width: 1396px; height: 1396px;
+  top: -640px; left: calc(50% + 77px);
+  background: radial-gradient(circle, rgba(255,255,255,.2) 0%, transparent 70%);
+}
+
+/* Scattered photos — absolute inside hero */
+.hero__photos { position: absolute; inset: 0; pointer-events: none; }
+.hero__photo  { position: absolute; overflow: hidden; }
+.hero__photo img { width: 100%; height: 100%; object-fit: cover; }
+/* Placeholder bg when image missing */
+.hero__photo { background: rgba(0,0,0,.06); }
+
+/* Positions as % of 1920×1000 canvas (inset = top right bottom left) */
+.hero__photo--1 { top:14.3%;  right:80.36%; bottom:75.7%;  left:11.51%; }
+.hero__photo--2 { top:25.9%;  right:68.07%; bottom:67.9%;  left:26.93%; }
+.hero__photo--3 { top:63.79%; right:73.52%; bottom:29.3%;  left:20.89%; }
+.hero__photo--4 { top:73.9%;  right:80.26%; bottom:11.6%;  left:8.02%;  }
+.hero__photo--5 { top:27.8%;  right:19.99%; bottom:62.7%;  left:72.34%; }
+.hero__photo--6 { top:51.6%;  right:6.92%;  bottom:33.3%;  left:80.83%; }
+.hero__photo--7 { top:63.8%;  right:25.16%; bottom:27.2%;  left:67.51%; }
+.hero__photo--8 { top:23.6%;  right:30.52%; bottom:73.3%;  left:66.93%; }
+
+/* Orange dots */
+.hero__dot {
+  position: absolute;
+  width: 11px; height: 11px;
+  background: var(--c-orange);
+  pointer-events: none;
+  z-index: 2;
+}
+/* Positions in px (1920-wide canvas) — converted to % for scaling */
+.hero__dot--1 { left: 60.78%; top: 29.5%;  }
+.hero__dot--2 { left: 17.86%; top: 58.5%;  }
+.hero__dot--3 { left: 88.91%; top: 84.6%;  }
+.hero__dot--4 { left: 82.24%; top: 38.7%;  }
+
+/* Headline — upper portion, centred */
+.hero__headline-wrap {
+  position: absolute;
+  top: 37%;          /* 373 / 1000 — scales with the fluid hero height */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  text-align: center;
+  z-index: 2;
+}
+.hero__headline {
+  font-family: var(--f-serif);
+  font-size: 70px;
+  font-weight: 400;
+  line-height: 80px;
+  color: var(--c-black);
+}
+
+/* Logo mark + description — anchored near bottom */
+.hero__bottom {
+  position: absolute;
+  bottom: 91px;       /* Figma: description ends 91px above fold */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 19px;
+  width: 751px;
+  text-align: center;
+  z-index: 2;
+}
+.hero__logomark img { height: 37px; width: auto; margin: 0 auto; }
+.hero__description {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 25px;
+  color: var(--c-black);
+}
+
+/* Scroll indicator — sits in flow between hero and intro so the line
+   visibly crosses the section boundary (Figma: dot 40px above the fold,
+   line running ~38px into the next section) */
+.hero__scroll {
+  position: relative;
+  z-index: 5;
+  height: 0;
+  /* transform, not margin — a negative margin on a 0-height block
+     collapses and drags the next section up over the hero */
+  transform: translateY(-41px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+/* line ends right at the fold — it doesn't run into the white section */
+.hero__scroll-line { width: 1px; height: 33px; flex-shrink: 0; background: var(--c-orange); margin-top: 4px; }
+.hero__scroll-dot  { width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0; }
+
+
+/* ----------------------------------------------------------------
+   Ambient background glows (Figma page-level blurs)
+   Zero-height anchor at the hero/intro boundary (Figma y=998);
+   positions below are figma_y − 998 / centre-relative x.
+   They paint beneath the sections: opaque section backgrounds cover
+   them, transparent areas let them glow through.
+   ---------------------------------------------------------------- */
+.bg-blurs {
+  position: relative;
+  height: 0;
+  pointer-events: none;
+}
+.bg-blur { position: absolute; max-width: none; }
+.bg-blur--1 { width: 1536px; left: calc(50% - 575px); top:  -12px; }  /* white glow */
+.bg-blur--2 { width: 1375px; left: calc(50% - 702px); top: 1436px; }  /* orange */
+.bg-blur--3 { width: 1396px; left: calc(50% - 612px); top: 2238px; }  /* faint white */
+.bg-blur--4 { width: 1000px; left: calc(50% - 335px); top: 3214px; }  /* white */
+
+
+/* ================================================================
+   02 — INTRO  (Our Foundation + The Challenge)
+   ================================================================ */
+.intro {
+  position: relative;
+  overflow: hidden;
+  /* fade from body bg (peach) into white for foundation section, then back to transparent */
+  background: linear-gradient(to bottom, #fff 0%, #fff 45%, transparent 70%);
+}
+
+/* ── Our Foundation ───────────────────────────────────────────────
+   Figma: label x=51 / headline x=673 / bullets x=52 y=212 / video x=672 y=212
+   → grid areas, video column starts 672px from the left edge.        */
+.intro__foundation {
+  display: grid;
+  grid-template-columns: minmax(0, 582fr) minmax(0, 1198fr);  /* 582px : 1198px at 1920 */
+  grid-template-areas:
+    "label   headline"
+    "bullets video";
+  padding: 84px var(--gm) 60px;
+  column-gap: var(--gg);
+  row-gap: 40px;   /* breathing room between headline and video/bullets */
+  max-width: 1920px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.intro__label   { grid-area: label; padding-top: 6px; }
+.intro__bullets { grid-area: bullets; align-self: start; }
+.intro__video   { grid-area: video; }
+
+.intro__foundation-headline {
+  grid-area: headline;
+  font-family: var(--f-serif);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 50px;
+  color: var(--c-black);
+}
+
+/* Video thumbnail */
+.intro__video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1200 / 595;
+  overflow: hidden;
+  background: rgba(0,0,0,.08);
+}
+.intro__video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.intro__video:hover .intro__video-thumb { transform: scale(1.04); }
+/* Play button — white circle with orange triangle; orange on hover */
+.intro__play-btn {
+  position: absolute;
+  bottom: 20px; left: 20px;
+  width: 83px; height: 83px;
+  border-radius: 50%;
+  background: var(--c-white);
+  display: flex; align-items: center; justify-content: center;
+  transition: background-color 0.25s ease;
+}
+.intro__play-btn img { display: none; }
+.intro__play-btn::before {
+  content: '';
+  width: 0; height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-left: 20px solid var(--c-orange);
+  border-top-width: 12px;
+  border-bottom-width: 12px;
+  margin-left: 7px;
+  transition: border-left-color 0.25s ease;
+}
+/* hovering the play button OR anywhere on the video flips it orange */
+.intro__play-btn:hover,
+.intro__video:hover .intro__play-btn { background: var(--c-orange); }
+.intro__play-btn:hover::before,
+.intro__video:hover .intro__play-btn::before { border-left-color: var(--c-white); }
+
+
+/* ── The Challenge ────────────────────────────────────────────────
+   Figma: text col x=50 w=487; circles start x=670; label y=940 /
+   headline y=1048 / body y=1160 / button y=1282 (circles top y=870). */
+.challenge {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 620fr) minmax(0, 1250fr);  /* circles start x=670 at 1920 */
+  grid-template-areas:
+    "label    circles"
+    "headline circles"
+    "body     circles"
+    "btn      circles";
+  grid-template-rows: auto auto auto 1fr;
+  padding: 60px 0 80px var(--gm);
+  max-width: 1920px;
+  margin: 0 auto;
+  overflow: hidden;  /* circles overflow right — clip here */
+  /* Fluid circle diameter: 437px at 1920, scales down with viewport so the
+     3rd circle never clips. 437/1920 ≈ 22.8vw. */
+  --circle-d: clamp(300px, 22.8vw, 437px);
+}
+
+/* LEFT text column (Figma vertical rhythm) */
+.challenge__label    { grid-area: label; padding-top: 70px; }
+.challenge__headline {
+  grid-area: headline;
+  margin-top: 89px;
+  max-width: 487px;
+  font-family: var(--f-sans);
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 40px;
+  color: var(--c-black);
+}
+.challenge__body {
+  grid-area: body;
+  margin-top: 31px;
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 25px;
+  color: var(--c-black);
+  max-width: 465px;
+}
+.challenge__btn {
+  grid-area: btn;
+  margin-top: 39px;
+  align-self: start;
+  justify-self: start;   /* don't stretch to the column width — keeps the hover pill hugging the label */
+}
+
+/* RIGHT: 3 circles going right and stepping down */
+.challenge__circles {
+  grid-area: circles;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+.challenge__circle {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--circle-d);
+  height: var(--circle-d);
+  border-radius: 50%;
+  /* Thin orange outline ring — transparent interior (matches Figma) */
+  border: 1.5px solid var(--c-orange);
+}
+/* Overlap (-55/437 ≈ 0.126) and vertical step (89/437 ≈ 0.204) scale with diameter */
+.challenge__circle--2 { margin-left: calc(var(--circle-d) * -0.126); margin-top: calc(var(--circle-d) * 0.204); }
+.challenge__circle--3 { margin-left: calc(var(--circle-d) * -0.126); margin-top: calc(var(--circle-d) * 0.407); }
+
+/* No separate bg div — the circle element IS the ring */
+
+.challenge__circle-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 36px;
+}
+/* Figma: icon floats at 24.5% from the top; title is dead-centred */
+.challenge__circle-icon {
+  position: absolute;
+  top: 24.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+.challenge__circle-title {
+  font-family: var(--f-serif);
+  font-size: clamp(22px, 1.7vw, 32px);  /* shrinks slightly as circles scale */
+  font-weight: 400;
+  line-height: 1.18;
+  color: var(--c-black);
+}
+.challenge__circle-tag {
+  font-family: var(--f-sans);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--c-orange);
+  position: absolute;
+  bottom: 90px;        /* Figma: tag sits ~3/4 down the circle */
+  left: 0; right: 0;
+  text-align: center;
+}
+
+
+/* ================================================================
+   03 — PILLARS
+   ================================================================ */
+.pillars {
+  position: relative;
+  padding: 40px 0 80px;
+  overflow: hidden;
+}
+
+.pillars__heading-wrap {
+  text-align: center;
+  padding: 0 var(--gm) 85px;
+  position: relative;
+  z-index: 1;
+}
+.pillars__heading {
+  font-family: var(--f-serif);
+  font-size: 70px;
+  font-weight: 400;
+  line-height: 80px;
+  color: var(--c-black);
+}
+
+/* Decorative arc SVG behind the cards.
+   top: 225px keeps the top curl + dot in the gap below the heading at
+   every viewport width (at 159px it crossed the heading text once the
+   layout narrowed).                                                    */
+.pillars__arc {
+  position: absolute;
+  top: 213px;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.8;      /* match the wave line */
+  /* No clip-path — that breaks z-index stacking.
+     The img aspect-ratio forces a natural height so SVG overflow
+     is bounded; parent .pillars { overflow: hidden } clips the rest. */
+}
+.pillars__arc img,
+.pillars__arc svg {
+  width: 100%;
+  display: block;
+  aspect-ratio: 2009.85 / 1150.77;   /* viewBox ratio — constrains rendered height */
+}
+#arc-dot { opacity: 0; transition: opacity 0.3s ease; }
+
+/* Two pillar cards side by side */
+.pillars__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gg);
+  padding: 0 var(--gm);
+  position: relative;
+  z-index: 1;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.pillar-card {
+  background: var(--c-white);
+  min-height: 737px;
+  padding: 59px 67px 75px 67px;   /* bottom 75 lifts the bullet list off the card edge */
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+.pillar-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 430px;
+  position: relative;
+  z-index: 1;
+  flex: 1;            /* fill card height so bullets can pin to the bottom */
+}
+/* Figma pins the bullet list near the bottom of the card */
+.pillar-card__text > .bullet-list { margin-top: auto; }
+.pillar-card__title {
+  font-family: var(--f-serif);
+  font-size: 50px;
+  font-weight: 400;
+  line-height: normal;
+}
+.pillar-card__body {
+  font-family: var(--f-sans);
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 30px;
+  max-width: 430px;
+}
+/* Illustrations — Figma positions within the 890×737 card */
+.pillar-card__illustration {
+  position: absolute;
+  pointer-events: none;
+}
+.pillar-card__illustration img { width: 100%; height: auto; }
+.pillar-card--issues .pillar-card__illustration {
+  width: 29.3%;        /* 261px of the 890px card */
+  right: 12.7%;        /* x=516 of 890 */
+  top: 34%;            /* clipped by the card bottom, as in Figma */
+}
+.pillar-card--sector .pillar-card__illustration {
+  width: 50.4%;        /* 449px of the 890px card */
+  right: -5.4%;        /* bleeds off the card's right edge */
+  top: 26.6%;
+}
+
+
+/* ── Our Approach ───────────────────────────────────────────────── */
+.approach {
+  position: relative;
+  z-index: 1;          /* keep cards/bubbles above the footer wave line */
+  padding-top: 64px;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+/* 5-card container using a 3-col grid
+   Top row  (3 orange): columns 1 2 3
+   Bottom row (2 white): columns 1-2 centre area
+   Vertical stagger via margin-top                              */
+.approach__cards {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 43px;
+  padding: 20px var(--gm) 60px;
+  /* rows: top 3 + bubbles row (zero-height spacer) + bottom 2 */
+  grid-template-rows: auto 0 auto;
+}
+
+/* Orange cards — row 1 */
+.approach-card {
+  width: 100%;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* text block sits vertically centred in the card */
+  gap: 12px;
+  align-self: start;
+}
+.approach-card--orange { background: var(--c-orange); min-height: 210px; max-width: 600px; }
+.approach-card--white  { background: var(--c-white);  min-height: 210px; }
+
+/* Vertical stagger + per-card horizontal alignment to match Figma scatter
+   (Figma card tops relative to the cards area: c3=0, c1=76, c2=168)      */
+.approach-card--1 { grid-column: 1; grid-row: 1; margin-top: 76px;  transform: rotate(-5.55deg); justify-self: start; }
+.approach-card--2 { grid-column: 2; grid-row: 1; margin-top: 168px; transform: rotate(4.62deg);  justify-self: center; }
+.approach-card--3 { grid-column: 3; grid-row: 1; margin-top: 0;     transform: rotate(-6.54deg); justify-self: end; }
+
+/* Decorative bubbles sit between the two rows — placed in a zero-height grid row */
+.approach__bubbles {
+  grid-column: 1 / 4;
+  grid-row: 2;
+  position: relative;
+  height: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.pillar-bubble {
+  position: absolute;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.pillar-bubble img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+/* Decorative dots scattered between the cards (Figma) */
+.approach-dot {
+  position: absolute;
+  border-radius: 50%;
+}
+.approach-dot--orange { background: var(--c-orange); }
+.approach-dot--white  { background: var(--c-white); }
+/* Positions from Figma (1920 layout). The bubbles row is a zero-height
+   spacer sitting between the two card rows; horizontal positions use %
+   of the container so they track the grid at every viewport width.    */
+.pillar-bubble--1 { width:145px; height:145px; left: 35.0%; top: -420px; }
+.pillar-bubble--2 { width:186px; height:186px; left:  7.1%; top:   37px; }
+.pillar-bubble--3 { width:115px; height:115px; left: 68.4%; top:  -57px; }
+.pillar-bubble--4 { width:106px; height:106px; left: 29.3%; top:  367px; }
+.pillar-bubble--5 { width: 85px; height: 85px; left: 84.9%; top: -142px; }
+.approach-dot--1 { width:17px; height:17px; left:57.4%; top:-416px; }
+.approach-dot--2 { width:51px; height:51px; left:19.2%; top:  13px; }
+.approach-dot--3 { width:16px; height:16px; left:18.8%; top: 347px; }
+.approach-dot--4 { width:24px; height:24px; left:86.6%; top: 355px; }
+.approach-dot--5 { width:55px; height:55px; left:10.6%; top:-399px; }
+.approach-dot--6 { width:51px; height:51px; left:53.2%; top:-326px; }
+
+/* White cards — row 2: card 4 in col 1, card 5 in col 2, col 3 empty */
+/* translateX is a % of the card's column width so the scatter scales with the grid
+   (Figma: c4 top = 457, c5 top = 570 from the cards area → minus row-1 height 424) */
+.approach-card--4 { grid-column: 1; grid-row: 3; margin-top: 33px;  transform: translateX(74%) rotate(0deg); }
+.approach-card--5 { grid-column: 2; grid-row: 3; margin-top: 146px; transform: translateX(87%) rotate(-7.7deg); }
+
+/* Card title & body colours */
+.approach-card__title {
+  font-family: var(--f-serif);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--c-white);
+}
+.approach-card__title--orange { color: var(--c-orange); }
+.approach-card__body {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 25px;
+  color: var(--c-white);
+}
+.approach-card__body--dark { color: var(--c-black); }
+.approach-card__icon { width: 21px; height: 21px; flex-shrink: 0; }
+.approach-card__icon img { width: 100%; }
+
+/* Figma: the button sits level with the bottom of card 5 (centre-left
+   empty space), not below the cards — pull it up into the cards area. */
+.approach__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: -50px;
+  padding-bottom: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ================================================================
+   04 — NEWS
+   ================================================================ */
+.news {
+  position: relative;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  /* Figma: page fades to white behind the lower part of the news section,
+     so the footer below sits on solid white */
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 55%, #ffffff 100%);
+}
+
+.news__heading {
+  font-family: var(--f-serif);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 50px;
+  color: var(--c-black);
+  text-align: center;
+  margin-bottom: 36px;
+  padding: 0 var(--gm);
+}
+
+.news__filters {
+  display: flex;
+  justify-content: center;
+  gap: 56px;
+  /* visible gap to the cards = this + the wrap's 30px tilt padding */
+  margin-bottom: 14px;
+}
+.news__filter {
+  font-family: var(--f-sans);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--c-black);
+  cursor: pointer;
+  position: relative;
+  /* no bottom padding — keeps the magnet ring centred on the text */
+  transition: color var(--ease);
+}
+.news__filter:hover { color: var(--c-orange); }
+.news__filter--active::after {
+  content: '';
+  position: absolute;
+  bottom: -14px; left: 50%;
+  transform: translateX(-50%);
+  width: 5.5px; height: 5.5px;
+  border-radius: 50%;
+  background: var(--c-orange);
+}
+
+/* ── Carousel / slider ──
+   The active card is always centred in the viewport; side cards bleed
+   off-screen and tilt ±3° (set by JS as .is-prev / .is-next).
+   JS auto-advances every 3s.                                          */
+.news__carousel-wrap {
+  overflow: hidden;
+  cursor: grab;
+  /* top padding so the tilted side cards' corners aren't cropped */
+  padding-top: 30px;
+  padding-bottom: 40px;
+}
+.news__carousel-wrap:active { cursor: grabbing; }
+
+.news__carousel {
+  --news-card-w: 890px;
+  display: flex;
+  gap: 61px;
+  /* end padding lets the first/last card reach the viewport centre */
+  padding-left: max(0px, calc(50vw - var(--news-card-w) / 2));
+  padding-right: max(0px, calc(50vw - var(--news-card-w) / 2));
+  width: max-content;
+  user-select: none;
+}
+
+.news-card {
+  flex: 0 0 var(--news-card-w);
+  width: var(--news-card-w);
+  height: 450px;
+  background: var(--c-white);
+  display: flex;
+  overflow: hidden;
+  /* tilt + arc offset are set inline by JS (wheel effect):
+     the centred card sits at the top of a huge circle, neighbours
+     drop and tilt ±3° along its rim                              */
+  will-change: transform;
+}
+
+.news-card__image {
+  width: 445px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: rgba(0,0,0,.08);
+}
+.news-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.news-card:hover .news-card__image img { transform: scale(1.06); }
+
+.news-card__body {
+  flex: 1;
+  padding: 78px 49px 44px 63px;   /* Figma offsets within the 445px text half */
+  display: flex;
+  flex-direction: column;
+}
+.news-card__title {
+  font-family: var(--f-serif);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--c-black);
+}
+.news-card__description {
+  font-family: var(--f-sans);
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 30px;
+  color: var(--c-black);
+  flex: 1;
+  margin-top: 32px;
+}
+.news-card__category {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--c-black);
+  margin-top: auto;
+}
+
+.news__cta { display: flex; justify-content: center; margin-top: 12px; }
+
+/* Keep news content above the footer wave line that sweeps behind it */
+.news > * { position: relative; z-index: 1; }
+
+
+/* ================================================================
+   05 — FOOTER
+   ================================================================ */
+/* Figma: the white area starts where the news section ends (the news
+   section carries the peach→white fade). Footer itself is solid white.
+   Layout: logo left (x=50) | nav links + social (x=1290) | legal (x=1600);
+   copyright is left-aligned with the nav column.                        */
+.footer {
+  position: relative;
+  /* no overflow:hidden — the wave line extends up past the footer */
+  background: var(--c-white);
+}
+
+/* Decorative wave line (Figma Vector 2):
+   starts at the end of the Pillars section and ends 109px above the
+   page bottom. script.js pins the top edge to the Pillars boundary at
+   runtime (the aspect-ratio below is only the no-JS fallback).         */
+.footer__wave {
+  position: absolute;
+  left: -8%;            /* -154 / 1920 */
+  bottom: 109px;
+  width: 116%;          /* 2227 / 1920 */
+  aspect-ratio: 2228.87 / 1555.14;
+  pointer-events: none;
+  opacity: 0.8;         /* match the arc line */
+}
+.footer__wave svg { width: 100%; height: 100%; display: block; }
+
+.footer__gradient { display: none; }
+
+.footer__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 310px 270px;
+  align-items: start;
+  padding: 48px var(--gm) 0;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.footer__logo img   { height: 45px; width: auto; }
+.footer__logo       { display: flex; align-items: flex-start; }
+
+/* Middle column: nav links with social icons beneath */
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 37px;
+}
+.footer__nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* hit area = the text itself, not the column */
+  gap: 33px;
+}
+.footer__nav-link {
+  font-family: var(--f-sans);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 22px;
+  transition: color var(--ease);
+}
+.footer__nav-link:hover { color: var(--c-orange); }
+
+.footer__legal-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* hit area = the text itself, not the column */
+  gap: 16px;
+}
+.footer__legal-link {
+  font-family: var(--f-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+  transition: color var(--ease);
+}
+.footer__legal-link:hover { color: var(--c-orange); }
+
+.footer__social {
+  display: flex;
+  align-items: center;
+  gap: 29px;
+}
+/* LinkedIn's glyph fills its viewBox more than Instagram's, so it gets
+   a slightly smaller box to look optically equal */
+.footer__social-link img { width: 27px; height: 27px; object-fit: contain; transition: filter var(--ease); }
+.footer__social-link:last-child img { width: 26px; height: 26px; }
+/* colorise the black icons to brand orange on hover */
+.footer__social-link:hover img {
+  filter: invert(46%) sepia(89%) saturate(3098%) hue-rotate(359deg) brightness(102%) contrast(104%);
+}
+
+/* Copyright — left-aligned with the nav column (Figma x=1290) */
+.footer__copyright {
+  position: relative;
+  z-index: 1;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 100px var(--gm) 56px;
+}
+.footer__copyright p {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--c-black);
+  margin-left: calc(100% - 580px);  /* align with nav column start */
+}
+.footer__credit { transition: color var(--ease); }
+.footer__credit:hover { color: var(--c-orange); }
+
+
+/* ================================================================
+   RESPONSIVE — below 1800px the 1920 design reads ~10% too large,
+   so scale the whole page to 90% (like browser zoom). Mobile keeps
+   its own dedicated layout.
+   ================================================================ */
+@media (min-width: 768px) and (max-width: 1800px) {
+  body { zoom: 0.9; }
+  /* 100vh inside a zoomed page shrinks too — compensate so the
+     landing still fills the browser height */
+  .hero { height: clamp(600px, calc(100vh / 0.9), 1200px); }
+}
+
+
+/* ================================================================
+   RESPONSIVE — 1440px
+   ================================================================ */
+@media (max-width: 1440px) {
+  .hero__headline  { font-size: 58px; line-height: 66px; }
+  .hero__headline-wrap { width: 920px; }
+  .hero__bottom    { bottom: 90px; }
+  .pillars__heading { font-size: 56px; line-height: 64px; }
+  .pillar-card { min-height: 620px; }
+  .pillar-card__title { font-size: 42px; }
+  .approach__cards { grid-template-columns: repeat(3, 1fr); }
+  .approach-card { width: 100%; }
+  /* cards grow taller in the narrower columns — push row 2 down */
+  .approach-card--4 { margin-top: 85px; }
+  .approach-card--5 { margin-top: 200px; }
+  .news__carousel { --news-card-w: 760px; }
+  .news-card { height: 420px; }
+  .news-card__image { width: 380px; }
+}
+
+
+/* Short browser windows — keep the hero composition from cramping */
+@media (min-width: 768px) and (max-height: 800px) {
+  .hero__headline-wrap { top: 32%; }
+  .hero__headline { font-size: 52px; line-height: 60px; }
+}
+
+
+/* ================================================================
+   RESPONSIVE — Challenge stack (≤ 1230px)
+   Below this the 3 fixed circles can no longer fit beside the text,
+   so the left text moves on top and the circles drop into a row below.
+   ================================================================ */
+@media (max-width: 1230px) {
+  .challenge {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "label"
+      "headline"
+      "body"
+      "btn"
+      "circles";
+    grid-template-rows: auto;
+    padding: 60px var(--gm) 80px;
+    --circle-d: clamp(240px, 30vw, 300px);
+  }
+  .challenge__label { padding-top: 0; }
+  .challenge__headline { margin-top: 20px; }
+  .challenge__body { margin-top: 20px; }
+  .challenge__btn { margin-top: 24px; }
+  .challenge__circles { margin-top: 40px; justify-content: center; }
+  .challenge__circle-title { font-size: clamp(16px, 2.2vw, 20px); }
+  .challenge__circle-content { padding: 32px 26px; }
+  .challenge__circle-tag { bottom: 26px; }
+}
+
+
+/* ================================================================
+   RESPONSIVE — 1024px
+   ================================================================ */
+@media (max-width: 1024px) {
+  .hero__headline  { font-size: 46px; line-height: 54px; }
+  .hero__headline-wrap { width: 640px; top: 34%; }
+  .hero__bottom    { width: 600px; bottom: 80px; }
+
+  .intro__foundation { padding: 60px var(--gm); }
+  .intro__foundation-headline { font-size: 32px; line-height: 42px; }
+
+  .pillars__heading { font-size: 46px; line-height: 54px; }
+  .pillar-card__title { font-size: 36px; }
+  .pillar-card__body { font-size: 18px; line-height: 26px; }
+  .pillar-card { padding: 40px; }
+
+  .approach__cards { grid-template-columns: repeat(3, 1fr); column-gap: 28px; }
+  .approach-card { width: 100%; padding: 24px 28px; }
+  .approach-card__title { font-size: 24px; }
+  /* shrink the photo bubbles so they don't crowd the narrower cards */
+  .pillar-bubble, .approach-dot { transform: scale(0.72); transform-origin: top left; }
+
+  .news__carousel { --news-card-w: 680px; }
+  .news-card { height: 400px; }
+  .news-card__image { width: 320px; }
+  .news-card__title { font-size: 22px; }
+  .news-card__description { font-size: 17px; line-height: 26px; }
+
+  .footer__inner { grid-template-columns: 1fr 280px 220px; }
+  .footer__copyright p { margin-left: calc(100% - 500px); }
+}
+
+
+/* ================================================================
+   RESPONSIVE — Mobile (≤ 767px)
+   ================================================================ */
+@media (max-width: 767px) {
+
+  /* Nav — Figma mobile keeps the search icon next to the hamburger.
+     The centre menu column is display:none, so the grid must drop to
+     two columns or the actions get auto-placed into the middle slot. */
+  .nav__inner { padding: 0 var(--gm-mob); height: 78px; grid-template-columns: 1fr auto; }
+  .nav__menu  { display: none; }
+  .nav__lang  { display: none; }
+  .nav__actions { gap: 8px; }
+  /* generous tap targets */
+  .nav__search-btn { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .nav__search-btn img { width: 21px; height: 21px; }
+  .nav__hamburger  { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
+  .nav__hamburger img { width: 39px; }
+  .nav__mobile-menu { display: none; padding: 16px var(--gm-mob) 24px; }
+  .nav__mobile-menu--open { display: flex; }
+
+  /* Hero — fixed height on mobile (Figma) */
+  .hero { height: 959px; }
+  .hero__plane { width: 200px; height: 129px; }
+  /* dots must shrink with the planes (200/300) — desktop 22px → ~15px,
+     otherwise the flying dots look oversized next to the photos */
+  .hero__plane--dot { width: 15px; height: 15px; }
+  .hero__scroll { transform: translateY(-63px); }   /* Figma mobile: dot 63px above the fold */
+  .hero__scroll-line { height: 54px; }              /* ends at the fold */
+  .hero__headline-wrap { width: 350px; top: 348px; }
+  .hero__headline  { font-size: 43px; line-height: 47px; }
+  .hero__headline br { display: none; }   /* natural wrap matches Figma mobile */
+  .hero__bottom    { width: 361px; bottom: 75px; gap: 10px; }
+  .hero__logomark img { height: 29px; }   /* +20% on mobile (was 24px) */
+  .hero__description { font-size: 12px; line-height: 18px; }
+
+  /* Hide excess hero photos on mobile (Figma keeps 6 of 8) */
+  .hero__photo--7,
+  .hero__photo--8 { display: none; }
+
+  /* Reposition photos for 440px viewport (Figma mobile coords) */
+  .hero__photo--1 { top:17.5%; left:54.2%; right:auto; bottom:auto; width:140px; height:90px; }
+  .hero__photo--2 { top:26.8%; left:11.1%; right:auto; bottom:auto; width: 96px; height:62px; }
+  .hero__photo--3 { top:76.1%; left: 4.2%; right:auto; bottom:auto; width: 71px; height:46px; }
+  .hero__photo--4 { top:69.2%; left:53.3%; right:auto; bottom:auto; width:138px; height:89px; }
+  .hero__photo--5 { top:61.3%; left:79.2%; right:auto; bottom:auto; width: 49px; height:31px; }
+  .hero__photo--6 { top:64.2%; left:13.7%; right:auto; bottom:auto; width:107px; height:69px; }
+
+  /* Orange dots — mobile positions (px on 440-wide canvas → %) */
+  .hero__dot--1 { left:28.4%; top:20.3%; }
+  .hero__dot--2 { left: 9.8%; top:46.1%; }
+  .hero__dot--3 { left:84.8%; top:32.7%; }
+  .hero__dot--4 { left:94.4%; top:70.2%; }
+
+  /* Intro Foundation — Figma mobile order: label → headline → bullets → video */
+  .intro__foundation {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "label"
+      "headline"
+      "bullets"
+      "video";
+    padding: 44px var(--gm-mob) 40px;
+    row-gap: 24px;
+  }
+  .intro__label { text-align: center; padding-top: 0; }
+  .intro__foundation-headline { font-size: 25px; line-height: 33px; text-align: center; }
+  .bullet-list { gap: 14px; }
+  .bullet-list__item { font-size: 15px; line-height: normal; }
+  .intro__play-btn { width: 46px; height: 46px; }
+  .intro__play-btn::before {
+    border-left-width: 12px;
+    border-top-width: 7px;
+    border-bottom-width: 7px;
+    margin-left: 4px;
+  }
+
+  /* Challenge — Figma mobile order: label → headline → circles → body → button */
+  .challenge {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "label"
+      "headline"
+      "circles"
+      "body"
+      "btn";
+    padding: 40px var(--gm-mob) 80px;
+    overflow: hidden;
+  }
+  .challenge__label    { text-align: center; padding-top: 12px; }
+  .challenge__headline { font-size: 20px; line-height: 26px; margin: 14px auto 0; max-width: 330px; text-align: center; }
+  .challenge__body     { font-size: 14px; line-height: 25px; max-width: 100%; margin-top: 26px; text-align: center; }
+  .challenge__btn      { margin: 26px auto 0; align-self: center; justify-self: center; }
+
+  /* Mobile circles — Figma stagger: 1 bleeds left, 2 right, 3 centre-left.
+     The cluster is a fixed 400px block kept centred, so the composition
+     holds together on phones wider than the 440 design.               */
+  .challenge__circles {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 26px auto 0;
+    width: 400px;
+    max-width: 100%;
+  }
+  .challenge__circle { width: 234px; height: 234px; }
+  .challenge__circle--1 { margin-left: -23px; }
+  .challenge__circle--2 { align-self: flex-end; margin-left: 0; margin-top: -158px; margin-right: -23px; }
+  .challenge__circle--3 { align-self: flex-start; margin-left: 15px; margin-top: -91px; }
+  .challenge__circle-title { font-size: 18px; line-height: 22px; }
+  .challenge__circle-content { padding: 28px 20px; gap: 8px; }
+  .challenge__circle-icon { width: 24px; height: 24px; }
+  .challenge__circle-tag { font-size: 10px; bottom: 48px; }
+
+  /* Pillars */
+  .pillars { padding: 24px 0 48px; }
+  .pillars__heading-wrap { padding: 0 var(--gm-mob) 32px; }
+  .pillars__heading { font-size: 43px; line-height: 47px; max-width: 330px; margin: 0 auto; }
+  .pillars__heading br { display: none; }
+  .pillars__arc { display: none; }
+
+  .pillars__cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 var(--gm-mob);
+  }
+  .pillar-card { min-height: 382px; padding: 43px 25px 32px; }
+  .pillar-card__title { font-size: 30px; text-align: center; }
+  .pillar-card__body  { font-size: 14px; line-height: 24px; text-align: center; max-width: 100%; }
+  .bullet-list--sm { gap: 18px; }
+  .bullet-list--sm .bullet-list__item { font-size: 15px; line-height: 18px; }
+
+  /* Card illustrations — Figma mobile coords (400-wide card) */
+  .pillar-card--issues .pillar-card__illustration { width: 131px; right: 26px; top: 143px; }
+  .pillar-card--sector .pillar-card__illustration { width: 203px; right: -10px; top: 147px; }
+
+  /* Approach cards — stacked with Figma offsets */
+  .approach { padding-top: 40px; }
+  .approach__cards {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px var(--gm-mob) 40px;
+    gap: 16px;
+  }
+  .approach-card { width: 328px !important; min-height: 118px; padding: 20px 24px; margin-top: 0 !important; align-self: center; }
+  /* Rotations + slight horizontal scatter (Figma mobile) */
+  .approach-card--1 { transform: rotate(-5.55deg) translateX(-12px); }
+  .approach-card--2 { transform: rotate(4.62deg)  translateX(-21px); }
+  .approach-card--3 { transform: rotate(-6.54deg) translateX(37px); }
+  .approach-card--4 { transform: rotate(0deg)     translateX(7px); }
+  .approach-card--5 { transform: rotate(-4deg); }
+  .approach-card__title { font-size: 22px; }
+  .approach-card__body  { font-size: 12px; line-height: 17px; }
+  .approach__cta { margin-top: 0; padding-bottom: 40px; }
+
+  /* Bubbles — Figma mobile keeps the photo circles (in front of the
+     cards, as in the design); dots hidden */
+  .approach__bubbles {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    grid-column: auto;
+    grid-row: auto;
+    z-index: 1;
+  }
+  .pillar-bubble { transform: none; }
+  .approach-dot { display: none; }
+  /* offsets are relative to the centred card column (440 design width),
+     so they hold their place on wider phones too */
+  .pillar-bubble--1 { width: 75px; height: 75px; left: calc(50% + 120px); top: 123px; }
+  .pillar-bubble--2 { width: 90px; height: 90px; left: calc(50% - 210px); top: 330px; }
+  .pillar-bubble--3 { width: 50px; height: 50px; left: calc(50% - 190px); top: 822px; }
+  .pillar-bubble--4 { width: 50px; height: 50px; left: calc(50% - 133px); top: -24px; }
+  .pillar-bubble--5 { width: 43px; height: 43px; left: calc(50% + 154px); top: 533px; }
+
+  /* News */
+  .news { padding: 48px 0 48px; }
+  .news__heading { font-size: 25px; line-height: 33px; padding: 0 var(--gm-mob); }
+  .news__filters { gap: 46px; padding: 0 var(--gm-mob); margin-bottom: 4px; }
+  .news__filter  { font-size: 14px; }
+
+  .news__carousel { gap: 17px; --news-card-w: 365px; }
+  .news-card {
+    height: auto;
+    flex-direction: column;
+  }
+  /* Figma mobile: no tilt — JS skips the wheel transform under 768px */
+  .news-card__image { width: 100%; height: 275px; }
+  .news-card__body  { padding: 19px 24px 24px; }
+  .news-card__title { font-size: 18px; }
+  .news-card__description { font-size: 14px; line-height: 22px; margin-top: 6px; }
+  .news-card__category { font-size: 14px; margin-top: 28px; }
+
+  /* Buttons scale down slightly (Figma mobile) */
+  .btn-circle { font-size: 12px; }
+
+  /* Footer wave — Figma mobile: x=-110, w=1394 (317% of 440), ends 245px above page bottom */
+  .footer__wave {
+    left: -25%;
+    width: 317%;
+    bottom: 245px;
+  }
+
+  /* Footer — Figma mobile: logo / links row / social / copyright; no legal */
+  .footer__inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 0;
+    padding: 72px var(--gm-mob) 0;
+  }
+  .footer__logo        { justify-content: center; }
+  .footer__logo img    { height: 43px; }
+  .footer__col         { gap: 36px; margin-top: 80px; }
+  .footer__nav         { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 12px 24px; }
+  .footer__nav-link    { font-size: 15px; }
+  .footer__legal-nav   { display: none; }
+  .footer__social      { justify-content: center; }
+  .footer__social-link img { width: 26px; height: 26px; }
+  .footer__social-link:last-child img { width: 25px; height: 25px; }
+  .footer__copyright   { padding: 24px var(--gm-mob) 52px; text-align: center; }
+  .footer__copyright p { margin-left: 0; }
+  .footer__copy-sep    { display: none; }
+  .footer__copy-line   { display: block; line-height: 18px; }
+}
+
+
+/* ================================================================
+   RESPONSIVE — 430px / 390px (smallest)
+   ================================================================ */
+@media (max-width: 430px) {
+  .hero__headline-wrap { width: 320px; }
+  .hero__headline { font-size: 38px; line-height: 43px; }
+  .hero__bottom   { width: 320px; }
+  .approach-card  { width: 290px !important; }
+  .news__carousel { --news-card-w: 320px; }
+  .challenge__circle { width: 210px; height: 210px; }
+  .challenge__circle--2 { margin-top: -140px; }
+  .challenge__circle--3 { margin-top: -80px; }
+  .challenge__circle-title { font-size: 16px; }
+}
+@media (max-width: 390px) {
+  .hero__headline { font-size: 34px; line-height: 40px; }
+  .approach-card  { width: 260px !important; }
+  .news__carousel { --news-card-w: 285px; }
+}
