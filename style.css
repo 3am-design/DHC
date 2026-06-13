@@ -44,19 +44,19 @@ html.lenis-on { scroll-behavior: auto; }   /* Lenis supplies the easing */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
-/* Peach is the page canvas (the ambient blur glows shine over it through the
-   transparent sections). background-COLOR stays solid peach so iOS Safari's
-   top status-bar backdrop samples peach (a gradient reads as no colour and
-   falls back to white, which split the top). A separate background-IMAGE then
-   paints only the last 220px white — that strip sits entirely behind the white
-   footer, so the translucent bottom toolbar samples white at the page end. */
+/* iOS Safari samples the body's background-COLOR to tint the status bar and
+   the floating bottom toolbar — and re-samples as you scroll, so a peach
+   background-color made the top flip (peach hero vs. white nav) and the bottom
+   stay peach. We keep background-color WHITE so both chrome areas are always
+   white. The peach page canvas (which the ambient blur glows shine over through
+   the transparent sections) is painted as a background-IMAGE on top, stopping
+   220px before the end so the white footer/page-end stays white. */
 body {
-  background-color: var(--c-bg);
+  background-color: var(--c-white);
   background-image: linear-gradient(to bottom,
-              transparent 0%,
-              transparent calc(100% - 220px),
-              var(--c-white) calc(100% - 220px),
-              var(--c-white) 100%);
+              var(--c-bg) 0%,
+              var(--c-bg) calc(100% - 220px),
+              transparent calc(100% - 220px));
   color: var(--c-black);
   font-family: var(--f-sans);
   overflow-x: clip;
