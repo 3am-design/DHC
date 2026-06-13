@@ -1403,6 +1403,20 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   /* Hero — lock to one full screen on mobile (svh tracks the real
      viewport so it never grows taller than the visible area) */
   .hero { height: 100vh; height: 100svh; }
+
+  /* Hero glow blobs — Figma mobile (node 8001:370). Colours/opacities already
+     match; only size + position change. left = centre-x − radius. */
+  .hero__blob--white-top   { width: 364px; height: 364px; top:  284px; left: calc(50% - 182px); }  /* white  .5 */
+  .hero__blob--orange-left { width: 633px; height: 633px; top:  343px; left: calc(50% - 468px); }  /* orange .3 */
+  .hero__blob--white-right { width: 509px; height: 509px; top: -105px; left: calc(50% - 177px); }  /* white  .2 */
+
+  /* Page glow blurs — Figma mobile (node 8001:362). Offsets are figma_y − 958
+     (the intro/hero boundary the .bg-blurs anchor sits at); left = centre−radius
+     as a % of the 440 frame. PNG colours already match each Figma fill. */
+  .bg-blur--1 { width: 1237px; left: calc(37.5% - 643px); top:  401px; }  /* white  (intro)        */
+  .bg-blur--2 { width:  883px; left: calc(37.5% - 469px); top: 2640px; }  /* orange (approach)     */
+  .bg-blur--4 { width:  768px; left: calc(37.5% - 347px); top: 3052px; }  /* white  (pillars/news) */
+  .bg-blur--3 { width:  980px; left: calc(62.5% - 463px); top: 3483px; }  /* white  (news/footer)  */
   .hero__plane { width: 200px; height: 129px; }
   /* dots must shrink with the planes (200/300) — desktop 22px → ~15px,
      otherwise the flying dots look oversized next to the photos */
@@ -1498,9 +1512,10 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .pillars__heading-wrap { padding: 0 var(--gm-mob) 32px; }
   .pillars__heading { font-size: 43px; line-height: 47px; max-width: 330px; margin: 0 auto; }
   .pillars__heading br { display: none; }
-  /* arc kept on mobile — widened past the screen edges so its sweeping
-     middle curve runs through the open space beside the stacked cards */
-  .pillars__arc { display: block; top: 150px; left: -60%; width: 220%; opacity: 0.7; }
+  /* arc kept on mobile — Figma mobile geometry (node 8001:484):
+     x=-1086 / y=195 / w=2009 on the 440 frame → only the right half of the
+     sweep shows on screen, curving through the space beside the cards */
+  .pillars__arc { display: block; top: 195px; left: -247%; width: 457%; opacity: 0.8; }
 
   .pillars__cards {
     grid-template-columns: 1fr;
@@ -1579,13 +1594,14 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   /* Buttons scale down slightly (Figma mobile) */
   .btn-circle { font-size: 12px; }
 
-  /* Footer wave — Figma mobile: x=-110, w=1394 (317% of 440).
-     Raised end (bottom offset increased from 245px) so the line terminates
-     in the open space above the footer logo instead of sweeping through it. */
+  /* Footer wave — Figma mobile (node 8001:361): x=-110, w=1394 (317% of 440),
+     bottom edge 245px above the page bottom. The JS pins the top to the
+     pillars boundary (lead 60 = Figma). At these proportions the curve passes
+     to the RIGHT of the centred footer logo, as in the design. */
   .footer__wave {
     left: -25%;
     width: 317%;
-    bottom: 430px;
+    bottom: 245px;
   }
 
   /* Footer — Figma mobile: logo / links row / social / copyright; no legal */
