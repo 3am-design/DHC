@@ -293,10 +293,15 @@
     });
   });
 
-  /* ---- pointer drag (pauses the auto-advance) ---- */
+  /* ---- mouse drag (pauses the auto-advance) ----
+     Touch is handled by native horizontal scrolling instead — iOS cancels
+     captured pointers the moment it suspects a scroll, which left the slider
+     stuck. We gate the pointer-drag to the mouse and manage the timer for
+     touch separately below. */
   let dragging = false, startX = 0, scrollAtStart = 0;
 
   wrap.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'mouse') return;   /* let touch scroll natively */
     dragging      = true;
     startX        = e.clientX;
     scrollAtStart = wrap.scrollLeft;
@@ -326,6 +331,31 @@
   }
   wrap.addEventListener('pointerup',     endDrag);
   wrap.addEventListener('pointercancel', endDrag);
+
+  /* ---- touch: native scroll drives the slider; just manage the timer ----
+     pause auto-advance while the finger is down (and through momentum), then
+     normalise back into the middle set and settle on the nearest card. */
+  let touchSettle = null;
+  wrap.addEventListener('touchstart', function () {
+    stopTimer();
+    cancelSlide();
+    if (touchSettle) { window.clearTimeout(touchSettle); touchSettle = null; }
+    delete wrap.dataset.dragged;
+  }, { passive: true });
+  wrap.addEventListener('touchmove', function () {
+    wrap.dataset.dragged = '1';
+  }, { passive: true });
+  wrap.addEventListener('touchend', function () {
+    /* wait out iOS momentum, then snap + resume */
+    if (touchSettle) window.clearTimeout(touchSettle);
+    touchSettle = window.setTimeout(function () {
+      normalize();
+      updateWheel();
+      const vis = visibleCards();
+      if (vis[currentIdx]) centreCard(vis[currentIdx], true);
+      startTimer();
+    }, 500);
+  }, { passive: true });
 })();
 
 

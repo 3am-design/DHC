@@ -45,13 +45,16 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
 /* Peach is the page canvas (the ambient blur glows shine over it through the
-   transparent sections). The last 220px — entirely behind the white footer —
-   switch to white so iOS Safari's translucent bottom toolbar samples white,
-   not peach, at the page end. */
+   transparent sections). background-COLOR stays solid peach so iOS Safari's
+   top status-bar backdrop samples peach (a gradient reads as no colour and
+   falls back to white, which split the top). A separate background-IMAGE then
+   paints only the last 220px white — that strip sits entirely behind the white
+   footer, so the translucent bottom toolbar samples white at the page end. */
 body {
-  background: linear-gradient(to bottom,
-              var(--c-bg) 0%,
-              var(--c-bg) calc(100% - 220px),
+  background-color: var(--c-bg);
+  background-image: linear-gradient(to bottom,
+              transparent 0%,
+              transparent calc(100% - 220px),
               var(--c-white) calc(100% - 220px),
               var(--c-white) 100%);
   color: var(--c-black);
@@ -1078,9 +1081,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .news__carousel-wrap {
   overflow: hidden;
   cursor: grab;
-  /* horizontal drag is JS-driven (pointer events); reserve vertical for
-     native page scroll so iOS Safari doesn't fight the drag and snap back */
-  touch-action: pan-y;
+  /* touch: native horizontal scroll handles dragging (default touch-action
+     routes horizontal swipes to this scroller, vertical to the page).
+     mouse: the JS pointer-drag below takes over (touch-action ignores mouse). */
   /* top padding so the tilted side cards' corners aren't cropped */
   padding-top: 30px;
   padding-bottom: 40px;
@@ -1495,7 +1498,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .pillars__heading-wrap { padding: 0 var(--gm-mob) 32px; }
   .pillars__heading { font-size: 43px; line-height: 47px; max-width: 330px; margin: 0 auto; }
   .pillars__heading br { display: none; }
-  .pillars__arc { display: none; }
+  /* arc kept on mobile — widened past the screen edges so its sweeping
+     middle curve runs through the open space beside the stacked cards */
+  .pillars__arc { display: block; top: 150px; left: -60%; width: 220%; opacity: 0.7; }
 
   .pillars__cards {
     grid-template-columns: 1fr;
@@ -1574,11 +1579,13 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   /* Buttons scale down slightly (Figma mobile) */
   .btn-circle { font-size: 12px; }
 
-  /* Footer wave — Figma mobile: x=-110, w=1394 (317% of 440), ends 245px above page bottom */
+  /* Footer wave — Figma mobile: x=-110, w=1394 (317% of 440).
+     Raised end (bottom offset increased from 245px) so the line terminates
+     in the open space above the footer logo instead of sweeping through it. */
   .footer__wave {
     left: -25%;
     width: 317%;
-    bottom: 245px;
+    bottom: 430px;
   }
 
   /* Footer — Figma mobile: logo / links row / social / copyright; no legal */
