@@ -48,32 +48,28 @@
    2. Mobile hamburger
    ---------------------------------------------------------------- */
 (function () {
-  const btn  = document.querySelector('.nav__hamburger');
-  const menu = document.getElementById('mobile-menu');
-  const nav  = document.getElementById('nav');
+  const btn   = document.querySelector('.nav__hamburger');
+  const menu  = document.getElementById('mobile-menu');
   if (!btn || !menu) return;
+  const close = menu.querySelector('.nav__mobile-close');
 
-  btn.addEventListener('click', function () {
-    const open = menu.classList.toggle('nav__mobile-menu--open');
+  /* full-screen overlay: lock the page scroll while it's open */
+  function setOpen(open) {
+    menu.classList.toggle('nav__mobile-menu--open', open);
     btn.setAttribute('aria-expanded', String(open));
     menu.setAttribute('aria-hidden', String(!open));
-  });
+    document.documentElement.classList.toggle('lock-scroll', open);
+    if (window.__lenis) { open ? window.__lenis.stop() : window.__lenis.start(); }
+  }
 
-  menu.querySelectorAll('.nav__mobile-link').forEach(function (l) {
-    l.addEventListener('click', function () {
-      menu.classList.remove('nav__mobile-menu--open');
-      btn.setAttribute('aria-expanded', 'false');
-      menu.setAttribute('aria-hidden', 'true');
-    });
+  btn.addEventListener('click', function () {
+    setOpen(!menu.classList.contains('nav__mobile-menu--open'));
   });
+  if (close) close.addEventListener('click', function () { setOpen(false); });
 
-  document.addEventListener('click', function (e) {
-    if (!nav.contains(e.target)) {
-      menu.classList.remove('nav__mobile-menu--open');
-      btn.setAttribute('aria-expanded', 'false');
-      menu.setAttribute('aria-hidden', 'true');
-    }
-  });
+  /* any nav choice (links, 中文) closes the overlay */
+  menu.querySelectorAll('.nav__mobile-link, .nav__mobile-sublink, .nav__mobile-lang')
+    .forEach(function (l) { l.addEventListener('click', function () { setOpen(false); }); });
 })();
 
 
@@ -836,6 +832,38 @@
   }, { threshold: 0.15, rootMargin: '0px 0px -130px 0px' });
 
   targets.forEach(function (el) { obs.observe(el); });
+})();
+
+
+/* ----------------------------------------------------------------
+   8.5 Layout grid overlay — press "G" to toggle the design grid
+   (6 cols / 50px margins / 40px gutter; light orange). A dev aid for
+   checking alignment. Ignored while typing in a field.
+   ---------------------------------------------------------------- */
+(function () {
+  let grid = null;
+  function build() {
+    grid = document.createElement('div');
+    grid.id = 'layout-grid';
+    grid.setAttribute('aria-hidden', 'true');
+    const inner = document.createElement('div');
+    inner.className = 'layout-grid__inner';
+    for (let i = 0; i < 6; i++) {
+      const col = document.createElement('div');
+      col.className = 'layout-grid__col';
+      inner.appendChild(col);
+    }
+    grid.appendChild(inner);
+    document.body.appendChild(grid);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'g' && e.key !== 'G') return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;
+    if (!grid) build();
+    grid.classList.toggle('layout-grid--on');
+  });
 })();
 
 

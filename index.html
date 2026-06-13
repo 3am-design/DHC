@@ -44,11 +44,51 @@
     </div>
 
     <div class="nav__mobile-menu" id="mobile-menu" aria-hidden="true">
-      <a href="#" class="nav__mobile-link">Work</a>
-      <a href="#" class="nav__mobile-link">Impact</a>
-      <a href="#" class="nav__mobile-link">About</a>
-      <a href="#" class="nav__mobile-link">Connect</a>
-      <a href="#" class="nav__mobile-link nav__mobile-link--lang">中文</a>
+
+      <!-- Full-screen menu top bar: 中文 (left) · search + close (right) -->
+      <div class="nav__mobile-bar">
+        <a href="#" class="nav__mobile-lang">中文</a>
+        <div class="nav__mobile-bar-actions">
+          <button class="nav__mobile-search" aria-label="Search">
+            <img src="assets/icons/icon-search.svg" alt="" />
+          </button>
+          <button class="nav__mobile-close" aria-label="Close menu">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Primary nav — big, left-aligned -->
+      <nav class="nav__mobile-links" aria-label="Mobile navigation">
+        <a href="#" class="nav__mobile-link">Work</a>
+        <a href="#" class="nav__mobile-link">Impact</a>
+        <a href="#" class="nav__mobile-link">About</a>
+        <a href="#" class="nav__mobile-link">Connect</a>
+      </nav>
+
+      <!-- Secondary links from the footer, two columns -->
+      <div class="nav__mobile-secondary">
+        <nav class="nav__mobile-col" aria-label="Get involved">
+          <a href="#" class="nav__mobile-sublink">Partner with us</a>
+          <a href="#" class="nav__mobile-sublink">Stay connected</a>
+          <a href="#" class="nav__mobile-sublink">Join our team</a>
+        </nav>
+        <nav class="nav__mobile-col" aria-label="Legal">
+          <a href="#" class="nav__mobile-sublink">Privacy Policy</a>
+          <a href="#" class="nav__mobile-sublink">Disclaimer</a>
+          <a href="#" class="nav__mobile-sublink">Sitemap</a>
+          <a href="#" class="nav__mobile-sublink">Accessibility</a>
+        </nav>
+      </div>
+
+      <div class="nav__mobile-social">
+        <a href="#" class="nav__mobile-social-link" aria-label="LinkedIn">
+          <img src="assets/icons/icon-linkedin.svg" alt="LinkedIn" />
+        </a>
+        <a href="#" class="nav__mobile-social-link" aria-label="Instagram">
+          <img src="assets/icons/icon-instagram.svg" alt="Instagram" />
+        </a>
+      </div>
     </div>
   </header>
 

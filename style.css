@@ -70,6 +70,39 @@ ul   { list-style: none; }
 
 
 /* ----------------------------------------------------------------
+   Layout grid overlay — toggled with the "G" key (script.js).
+   Mirrors the design grid: max 1920, 50px margins, 6 cols, 40px gutter
+   (mobile: 20px margins, 4 cols, 15px gutter). Columns tinted light orange.
+   ---------------------------------------------------------------- */
+#layout-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  display: none;
+}
+#layout-grid.layout-grid--on { display: block; }
+.layout-grid__inner {
+  max-width: 1920px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--gm);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0 var(--gg);
+}
+.layout-grid__col { background: rgba(255, 105, 0, 0.12); }   /* light orange */
+@media (max-width: 767px) {
+  .layout-grid__inner {
+    padding: 0 var(--gm-mob);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0 var(--gg-mob);
+  }
+  .layout-grid__col:nth-child(n+5) { display: none; }  /* mobile = 4 cols */
+}
+
+
+/* ----------------------------------------------------------------
    Shared utilities
    ---------------------------------------------------------------- */
 .text-orange { color: var(--c-orange); }
@@ -359,6 +392,10 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+  /* the 22px glyph centred in the 40px tap target leaves a 9px gap to the
+     button edge — nudge right so the icon itself sits flush on the col-6
+     margin line (reset on mobile, where the hamburger is the last item) */
+  margin-right: -9px;
 }
 .nav__search-btn img {
   width: 22px;
@@ -387,24 +424,105 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   object-fit: contain;
 }
 
-/* Mobile menu drawer */
+/* Mobile menu — full-screen orange overlay (mobile only) */
 .nav__mobile-menu {
   display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;                 /* above the fixed nav (100) */
+  background: var(--c-orange);
+  color: var(--c-white);
   flex-direction: column;
-  background: var(--c-bg);
-  padding: 16px var(--gm-mob) 24px;
-  border-top: 1px solid rgba(0,0,0,0.08);
+  padding: 0 var(--gm-mob) calc(env(safe-area-inset-bottom) + 28px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .nav__mobile-menu--open { display: flex; }
-.nav__mobile-link {
-  font-family: var(--f-sans);
-  font-size: 20px;
-  font-weight: 400;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+
+/* Top bar inside the overlay: 中文 left · search + close right */
+.nav__mobile-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 78px;                 /* match the nav bar height */
+  flex-shrink: 0;
 }
-.nav__mobile-link:last-child { border-bottom: none; }
-.nav__mobile-link--lang { font-size: 16px; margin-top: 8px; }
+.nav__mobile-lang {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--c-white);
+}
+.nav__mobile-bar-actions { display: flex; align-items: center; gap: 14px; }
+.nav__mobile-search {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+}
+.nav__mobile-search img {
+  width: 21px; height: 21px; object-fit: contain;
+  filter: brightness(0) invert(1);   /* black icon → white */
+}
+/* X close — two crossed bars */
+.nav__mobile-close {
+  position: relative;
+  width: 40px; height: 40px;
+  flex-shrink: 0;
+}
+.nav__mobile-close span {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 24px; height: 2px;
+  background: var(--c-white);
+}
+.nav__mobile-close span:first-child { transform: translate(-50%, -50%) rotate(45deg); }
+.nav__mobile-close span:last-child  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+/* Primary links — big, left-aligned */
+.nav__mobile-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 24px;
+}
+.nav__mobile-link {
+  font-family: var(--f-serif);
+  font-size: 44px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--c-white);
+}
+
+/* Secondary links from the footer — two columns */
+.nav__mobile-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+  margin-top: auto;            /* push to the lower part of the screen */
+  padding-top: 48px;
+}
+.nav__mobile-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.nav__mobile-sublink {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--c-white);
+}
+
+.nav__mobile-social {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+}
+.nav__mobile-social-link img {
+  width: 26px; height: 26px; object-fit: contain;
+  filter: brightness(0) invert(1);   /* black icon → white */
+}
 
 
 /* ================================================================
@@ -614,7 +732,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
    → grid areas, video column starts 672px from the left edge.        */
 .intro__foundation {
   display: grid;
-  grid-template-columns: minmax(0, 582fr) minmax(0, 1198fr);  /* 582px : 1198px at 1920 */
+  grid-template-columns: minmax(0, 580fr) minmax(0, 1200fr);  /* cols 1–2 (580) : cols 3–6 (1200), gutter = column-gap */
   grid-template-areas:
     "label   headline"
     "bullets video";
@@ -690,14 +808,17 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .challenge {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 620fr) minmax(0, 1250fr);  /* circles start x=670 at 1920 */
+  /* 6-col grid: text = cols 1–2 (620), circles = cols 3–6 (1200). Both side
+     margins are var(--gm) so the circle cluster ends on the grid's right
+     margin (col-6 edge) instead of bleeding into the margin. */
+  grid-template-columns: minmax(0, 620fr) minmax(0, 1200fr);
   grid-template-areas:
     "label    circles"
     "headline circles"
     "body     circles"
     "btn      circles";
   grid-template-rows: auto auto auto 1fr;
-  padding: 60px 0 80px var(--gm);
+  padding: 60px var(--gm) 80px;
   max-width: 1920px;
   margin: 0 auto;
   overflow: hidden;  /* circles overflow right — clip here */
@@ -741,6 +862,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   position: relative;
   display: flex;
   align-items: flex-start;
+  /* circle 1 starts on the col-3 line (grid cell left); the cluster runs to
+     the col-6 / right-margin line — aligned to the grid, not the page edge */
+  justify-content: flex-start;
 }
 
 .challenge__circle {
@@ -1276,6 +1400,27 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .footer__credit { transition: color var(--ease); }
 .footer__credit:hover { color: var(--c-orange); }
 
+/* Snap the footer to the 6-col grid at desktop widths (where the columns
+   are wide enough for the labels): logo cols 1–2, nav + social on col 5,
+   legal on col 6, copyright spanning cols 5–6. Below 1280 the columns get
+   too narrow for the labels, so the base 3-col layout above stays in use. */
+@media (min-width: 1281px) {
+  .footer__inner {
+    grid-template-columns: repeat(6, 1fr);
+    column-gap: var(--gg);
+  }
+  .footer__logo      { grid-column: 1 / 3; }
+  .footer__col       { grid-column: 5; }
+  .footer__legal-nav { grid-column: 6; }
+
+  .footer__copyright {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    column-gap: var(--gg);
+  }
+  .footer__copyright p { grid-column: 5 / 7; margin-left: 0; }
+}
+
 
 /* ================================================================
    RESPONSIVE — below 1800px the 1920 design reads ~10% too large,
@@ -1393,12 +1538,11 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .nav__lang  { display: none; }
   .nav__actions { gap: 8px; }
   /* generous tap targets */
-  .nav__search-btn { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .nav__search-btn { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; margin-right: 0; }
   .nav__search-btn img { width: 21px; height: 21px; }
   .nav__hamburger  { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
   .nav__hamburger img { width: 39px; }
-  .nav__mobile-menu { display: none; padding: 16px var(--gm-mob) 24px; }
-  .nav__mobile-menu--open { display: flex; }
+  /* full-screen mobile menu styles live in the base NAVIGATION block */
 
   /* Hero — lock to one full screen on mobile (svh tracks the real
      viewport so it never grows taller than the visible area) */
@@ -1485,7 +1629,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   }
   .challenge__label    { text-align: center; padding-top: 12px; }
   .challenge__headline { font-size: 20px; line-height: 26px; margin: 14px auto 0; max-width: 330px; text-align: center; }
-  .challenge__body     { font-size: 14px; line-height: 25px; max-width: 100%; margin-top: 26px; text-align: center; }
+  .challenge__body     { font-size: 14px; line-height: 25px; max-width: 80vw; margin: 26px auto 0; text-align: center; }
   .challenge__btn      { margin: 26px auto 0; align-self: center; justify-self: center; }
 
   /* Mobile circles — Figma stagger: 1 bleeds left, 2 right, 3 centre-left.
@@ -1523,8 +1667,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
     padding: 0 var(--gm-mob);
   }
   .pillar-card { min-height: 382px; padding: 43px 25px 32px; }
-  .pillar-card__title { font-size: 30px; text-align: center; }
-  .pillar-card__body  { font-size: 14px; line-height: 24px; text-align: center; max-width: 100%; }
+  /* left-aligned on mobile too (was centred) — matches desktop */
+  .pillar-card__title { font-size: 30px; text-align: left; }
+  .pillar-card__body  { font-size: 14px; line-height: 24px; text-align: left; max-width: 100%; }
   .bullet-list--sm { gap: 18px; }
   .bullet-list--sm .bullet-list__item { font-size: 15px; line-height: 18px; }
 
@@ -1605,7 +1750,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .footer__wave {
     left: -25%;
     width: 317%;
-    bottom: 145px;   /* Figma 245 − 100: lowered per request */
+    bottom: 95px;   /* lowered per request (Figma 245 − 150 total) */
   }
 
   /* Footer — Figma mobile: logo / links row / social / copyright; no legal */
@@ -1616,7 +1761,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
     padding: 72px var(--gm-mob) 0;
   }
   .footer__logo        { justify-content: center; }
-  .footer__logo img    { height: 43px; }
+  .footer__logo img    { height: 34px; }   /* −20% on mobile (was 43px) */
   .footer__col         { gap: 36px; margin-top: 80px; }
   .footer__nav         { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 12px 24px; }
   .footer__nav-link    { font-size: 15px; }
