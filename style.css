@@ -38,13 +38,28 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 /* html bg = white so the page visually ends where the footer's white ends
    (otherwise the peach body bg shows in any canvas area past the content) */
-html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; background: var(--c-white); }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; background: var(--c-white); overflow-x: clip; }
 html.lenis-on { scroll-behavior: auto; }   /* Lenis supplies the easing */
 /* Lenis recommended helpers */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
-body { background: var(--c-bg); color: var(--c-black); font-family: var(--f-sans); overflow-x: hidden; }
+/* Peach is the page canvas (the ambient blur glows shine over it through the
+   transparent sections). The last 220px — entirely behind the white footer —
+   switch to white so iOS Safari's translucent bottom toolbar samples white,
+   not peach, at the page end. */
+body {
+  background: linear-gradient(to bottom,
+              var(--c-bg) 0%,
+              var(--c-bg) calc(100% - 220px),
+              var(--c-white) calc(100% - 220px),
+              var(--c-white) 100%);
+  color: var(--c-black);
+  font-family: var(--f-sans);
+  overflow-x: clip;
+  position: relative;
+  width: 100%;
+}
 img  { display: block; max-width: 100%; height: auto; }
 a    { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font: inherit; padding: 0; }
@@ -1063,6 +1078,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .news__carousel-wrap {
   overflow: hidden;
   cursor: grab;
+  /* horizontal drag is JS-driven (pointer events); reserve vertical for
+     native page scroll so iOS Safari doesn't fight the drag and snap back */
+  touch-action: pan-y;
   /* top padding so the tilted side cards' corners aren't cropped */
   padding-top: 30px;
   padding-bottom: 40px;
@@ -1379,15 +1397,16 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .nav__mobile-menu { display: none; padding: 16px var(--gm-mob) 24px; }
   .nav__mobile-menu--open { display: flex; }
 
-  /* Hero — fixed height on mobile (Figma) */
-  .hero { height: 959px; }
+  /* Hero — lock to one full screen on mobile (svh tracks the real
+     viewport so it never grows taller than the visible area) */
+  .hero { height: 100vh; height: 100svh; }
   .hero__plane { width: 200px; height: 129px; }
   /* dots must shrink with the planes (200/300) — desktop 22px → ~15px,
      otherwise the flying dots look oversized next to the photos */
   .hero__plane--dot { width: 15px; height: 15px; }
   .hero__scroll { transform: translateY(-63px); }   /* Figma mobile: dot 63px above the fold */
   .hero__scroll-line { height: 54px; }              /* ends at the fold */
-  .hero__headline-wrap { width: 350px; top: 348px; }
+  .hero__headline-wrap { width: 350px; top: 36%; }
   .hero__headline  { font-size: 43px; line-height: 47px; }
   .hero__headline br { display: none; }   /* natural wrap matches Figma mobile */
   .hero__bottom    { width: 361px; bottom: 75px; gap: 10px; }
