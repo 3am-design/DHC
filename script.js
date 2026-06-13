@@ -59,6 +59,7 @@
     btn.setAttribute('aria-expanded', String(open));
     menu.setAttribute('aria-hidden', String(!open));
     document.documentElement.classList.toggle('lock-scroll', open);
+    document.body.classList.toggle('menu-open', open);   /* flips the custom cursor white */
     if (window.__lenis) { open ? window.__lenis.stop() : window.__lenis.start(); }
   }
 
