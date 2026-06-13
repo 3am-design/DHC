@@ -171,10 +171,24 @@
     return 0;
   }
 
+  /* mobile uses native smooth scrolling so it cooperates with CSS
+     scroll-snap (the JS rAF animation fought the snap → jumpy auto-rotate) */
+  const canNativeSmooth = 'scrollBehavior' in document.documentElement.style;
+  function nativeSmooth() {
+    return canNativeSmooth && window.matchMedia('(max-width: 767px)').matches;
+  }
+  let snapSettle = null;
   function centreCard(card, smooth) {
     const left = card.offsetLeft - (wrap.clientWidth - card.offsetWidth) / 2;
-    if (smooth) animateScrollTo(left, SLIDE_MS);
-    else        wrap.scrollLeft = left;
+    if (!smooth) { wrap.scrollLeft = left; return; }
+    if (nativeSmooth()) {
+      cancelSlide();
+      wrap.scrollTo({ left: left, behavior: 'smooth' });
+      if (snapSettle) window.clearTimeout(snapSettle);
+      snapSettle = window.setTimeout(function () { normalize(); updateWheel(); }, 650);
+    } else {
+      animateScrollTo(left, SLIDE_MS);
+    }
   }
 
   /* ---- wheel effect ----

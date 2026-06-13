@@ -812,12 +812,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
      margins are var(--gm) so the circle cluster ends on the grid's right
      margin (col-6 edge) instead of bleeding into the margin. */
   grid-template-columns: minmax(0, 620fr) minmax(0, 1200fr);
-  grid-template-areas:
-    "label    circles"
-    "headline circles"
-    "body     circles"
-    "btn      circles";
-  grid-template-rows: auto auto auto 1fr;
+  align-items: center;   /* vertically centre the text block against the circles */
   padding: 60px var(--gm) 80px;
   max-width: 1920px;
   margin: 0 auto;
@@ -827,11 +822,14 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   --circle-d: clamp(300px, 22.8vw, 437px);
 }
 
-/* LEFT text column (Figma vertical rhythm) */
-.challenge__label    { grid-area: label; padding-top: 70px; }
+/* LEFT text — a single block, vertically centred against the circle cluster */
+.challenge__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .challenge__headline {
-  grid-area: headline;
-  margin-top: 89px;
+  margin-top: 24px;
   max-width: 487px;
   font-family: var(--f-sans);
   font-size: 30px;
@@ -840,7 +838,6 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   color: var(--c-black);
 }
 .challenge__body {
-  grid-area: body;
   margin-top: 31px;
   font-family: var(--f-sans);
   font-size: 16px;
@@ -850,15 +847,11 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   max-width: 465px;
 }
 .challenge__btn {
-  grid-area: btn;
   margin-top: 39px;
-  align-self: start;
-  justify-self: start;   /* don't stretch to the column width — keeps the hover pill hugging the label */
 }
 
 /* RIGHT: 3 circles going right and stepping down */
 .challenge__circles {
-  grid-area: circles;
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -1010,7 +1003,10 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   font-size: 22px;
   font-weight: 300;
   line-height: 30px;
-  max-width: 430px;
+  /* stay full width (≈430) down through the second-largest breakpoint, only
+     narrowing once the card gets genuinely tight; the illustration bleeds from
+     the lower-right so the upper body copy can run wider without clashing */
+  max-width: min(31vw, 430px);
 }
 /* Illustrations — Figma positions within the 890×737 card */
 .pillar-card__illustration {
@@ -1019,12 +1015,13 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 }
 .pillar-card__illustration img { width: 100%; height: auto; }
 .pillar-card--issues .pillar-card__illustration {
-  width: 29.3%;        /* 261px of the 890px card */
-  right: 12.7%;        /* x=516 of 890 */
-  top: 34%;            /* clipped by the card bottom, as in Figma */
+  width: 33%;          /* a touch larger */
+  right: 7%;
+  top: auto;
+  bottom: -8%;         /* bleed off the card bottom, like the sector card */
 }
 .pillar-card--sector .pillar-card__illustration {
-  width: 50.4%;        /* 449px of the 890px card */
+  width: 53%;          /* a touch larger */
   right: -5.4%;        /* bleeds off the card's right edge */
   top: 26.6%;
 }
@@ -1464,31 +1461,42 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 
 
 /* ================================================================
-   RESPONSIVE — Challenge stack (≤ 1230px)
-   Below this the 3 fixed circles can no longer fit beside the text,
-   so the left text moves on top and the circles drop into a row below.
+   RESPONSIVE — Challenge 3:3 (768–1230px)
+   The 4-col horizontal circle row no longer fits, so keep a 3:3 split
+   (text left half, circles right half) but switch the circles to the
+   mobile cluster (vertical Venn) so they nest instead of overflowing.
+   Below 768 the whole section stacks (see the mobile block).
    ================================================================ */
-@media (max-width: 1230px) {
+@media (min-width: 768px) and (max-width: 1230px) {
   .challenge {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "label"
-      "headline"
-      "body"
-      "btn"
-      "circles";
-    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr;          /* 3 cols : 3 cols */
+    column-gap: var(--gg);
+    align-items: center;                      /* text centred against the circles */
     padding: 60px var(--gm) 80px;
-    --circle-d: clamp(240px, 30vw, 300px);
+    /* fill the right half so the circle text isn't cramped */
+    --circle-d: clamp(190px, 24vw, 340px);
   }
-  .challenge__label { padding-top: 0; }
-  .challenge__headline { margin-top: 20px; }
-  .challenge__body { margin-top: 20px; }
-  .challenge__btn { margin-top: 24px; }
-  .challenge__circles { margin-top: 40px; justify-content: center; }
-  .challenge__circle-title { font-size: clamp(16px, 2.2vw, 20px); }
-  .challenge__circle-content { padding: 32px 26px; }
-  .challenge__circle-tag { bottom: 26px; }
+  .challenge__headline { font-size: clamp(20px, 2.2vw, 30px); line-height: 1.3; }
+  .challenge__body     { max-width: 100%; }
+
+  /* mobile-style Venn cluster, parametrised by --circle-d, centred in the
+     right half (vertical centring vs the text comes from align-items) */
+  .challenge__circles {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: calc(var(--circle-d) * 1.71);
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .challenge__circle    { width: var(--circle-d); height: var(--circle-d); }
+  .challenge__circle--1 { margin-left: calc(var(--circle-d) * -0.098); margin-top: 0; }
+  .challenge__circle--2 { align-self: flex-end;   margin-left: 0; margin-right: calc(var(--circle-d) * -0.098); margin-top: calc(var(--circle-d) * -0.675); }
+  .challenge__circle--3 { align-self: flex-start; margin-left: calc(var(--circle-d) * 0.064); margin-top: calc(var(--circle-d) * -0.389); }
+  .challenge__circle-title   { font-size: clamp(15px, 1.6vw, 20px); line-height: 1.2; }
+  .challenge__circle-content { padding: 24px 20px; gap: 8px; }
+  .challenge__circle-icon    { width: 26px; height: 26px; }
+  .challenge__circle-tag     { font-size: 11px; bottom: calc(var(--circle-d) * 0.2); }
 }
 
 
@@ -1507,6 +1515,8 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .pillar-card__title { font-size: 36px; }
   .pillar-card__body { font-size: 18px; line-height: 26px; }
   .pillar-card { padding: 40px; }
+  /* keep the bullet list no larger than the body copy above it */
+  .bullet-list--sm .bullet-list__item { font-size: 16px; line-height: 22px; }
 
   .approach__cards { grid-template-columns: repeat(3, 1fr); column-gap: 28px; }
   .approach-card { width: 100%; padding: 24px 28px; }
@@ -1624,13 +1634,20 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
       "circles"
       "body"
       "btn";
+    grid-template-rows: auto;     /* reset the base 4-row template for the 5-row stack */
+    column-gap: 0;
+    align-items: initial;
     padding: 40px var(--gm-mob) 80px;
     overflow: hidden;
   }
-  .challenge__label    { text-align: center; padding-top: 12px; }
-  .challenge__headline { font-size: 20px; line-height: 26px; margin: 14px auto 0; max-width: 330px; text-align: center; }
-  .challenge__body     { font-size: 14px; line-height: 25px; max-width: 80vw; margin: 26px auto 0; text-align: center; }
-  .challenge__btn      { margin: 26px auto 0; align-self: center; justify-self: center; }
+  /* let the wrapped text items re-flow into the grid so circles sit between
+     the headline and body (Figma mobile order) */
+  .challenge__text     { display: contents; }
+  .challenge__label    { grid-area: label; text-align: center; padding-top: 12px; }
+  .challenge__headline { grid-area: headline; font-size: 20px; line-height: 26px; margin: 14px auto 0; max-width: 330px; text-align: center; }
+  .challenge__body     { grid-area: body; font-size: 14px; line-height: 25px; max-width: 80vw; margin: 26px auto 0; text-align: center; }
+  .challenge__btn      { grid-area: btn; margin: 26px auto 0; align-self: center; justify-self: center; }
+  .challenge__circles  { grid-area: circles; }
 
   /* Mobile circles — Figma stagger: 1 bleeds left, 2 right, 3 centre-left.
      The cluster is a fixed 400px block kept centred, so the composition
@@ -1669,13 +1686,17 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .pillar-card { min-height: 382px; padding: 43px 25px 32px; }
   /* left-aligned on mobile too (was centred) — matches desktop */
   .pillar-card__title { font-size: 30px; text-align: left; }
-  .pillar-card__body  { font-size: 14px; line-height: 24px; text-align: left; max-width: 100%; }
+  /* body copy ends at the 2nd of the 4 mobile cols, leaving cols 3–4 clear
+     for the card illustration. 85px = 2×margin(20) + 3×gutter(15);
+     −10px backs out the card's 25px left padding vs the col-2 edge. */
+  .pillar-card__body  { font-size: 14px; line-height: 24px; text-align: left; max-width: calc((100vw - 85px) / 2 - 10px); }
   .bullet-list--sm { gap: 18px; }
-  .bullet-list--sm .bullet-list__item { font-size: 15px; line-height: 18px; }
+  .bullet-list--sm .bullet-list__item { font-size: 14px; line-height: 18px; }   /* ≤ body (14) */
 
-  /* Card illustrations — Figma mobile coords (400-wide card) */
-  .pillar-card--issues .pillar-card__illustration { width: 131px; right: 26px; top: 143px; }
-  .pillar-card--sector .pillar-card__illustration { width: 203px; right: -10px; top: 147px; }
+  /* Card illustrations — bigger now the body is held to 2 cols; the flower
+     bottom-bleeds off the card like the hands one. */
+  .pillar-card--issues .pillar-card__illustration { width: 168px; right: 14px; top: auto; bottom: -16px; }
+  .pillar-card--sector .pillar-card__illustration { width: 225px; right: -14px; top: auto; bottom: -16px; }
 
   /* Approach cards — stacked with Figma offsets */
   .approach { padding-top: 40px; }

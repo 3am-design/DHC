@@ -199,19 +199,24 @@
            label → headline → circles → body → button (Figma mobile)  -->
       <div class="challenge">
 
-        <p class="label challenge__label">The Challenge</p>
-        <h2 class="challenge__headline">
-          Today's social challenges are often rooted in disconnection.
-        </h2>
-        <p class="challenge__body">
-          Across individuals, communities and the impact sector, we see a growing need to rebuild connection, trust and the conditions for meaningful change.
-        </p>
-        <a href="#" class="btn-circle challenge__btn">
-          <span class="btn-circle__ring">
-            <img src="assets/icons/icon-arrow.svg" alt="" class="btn-circle__arrow" />
-          </span>
-          <span class="btn-circle__label">Discover more</span>
-        </a>
+        <!-- Left text — wrapped so it can be vertically centred against the
+             circles; on mobile the wrapper is display:contents so the items
+             re-flow into the grid order label → headline → circles → body → btn -->
+        <div class="challenge__text">
+          <p class="label challenge__label">The Challenge</p>
+          <h2 class="challenge__headline">
+            Today's social challenges are often rooted in disconnection.
+          </h2>
+          <p class="challenge__body">
+            Across individuals, communities and the impact sector, we see a growing need to rebuild connection, trust and the conditions for meaningful change.
+          </p>
+          <a href="#" class="btn-circle challenge__btn">
+            <span class="btn-circle__ring">
+              <img src="assets/icons/icon-arrow.svg" alt="" class="btn-circle__arrow" />
+            </span>
+            <span class="btn-circle__label">Discover more</span>
+          </a>
+        </div>
 
         <!-- Right: 3 overlapping circles -->
         <div class="challenge__circles" aria-label="Three areas of disconnection">
