@@ -1515,7 +1515,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   /* arc kept on mobile — Figma mobile geometry (node 8001:484):
      x=-1086 / y=195 / w=2009 on the 440 frame → only the right half of the
      sweep shows on screen, curving through the space beside the cards */
-  .pillars__arc { display: block; top: 195px; left: -247%; width: 457%; opacity: 0.8; }
+  .pillars__arc { display: block; top: 265px; left: -247%; width: 457%; opacity: 0.8; }
 
   .pillars__cards {
     grid-template-columns: 1fr;
@@ -1580,9 +1580,13 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .news__filter  { font-size: 14px; }
 
   .news__carousel { gap: 17px; --news-card-w: 365px; }
+  /* native scroll-snap centres cards smoothly on touch — replaces the JS
+     snap-back that felt like a catch/stutter after releasing a drag */
+  .news__carousel-wrap { scroll-snap-type: x mandatory; }
   .news-card {
     height: auto;
     flex-direction: column;
+    scroll-snap-align: center;
   }
   /* Figma mobile: no tilt — JS skips the wheel transform under 768px */
   .news-card__image { width: 100%; height: 275px; }
@@ -1601,7 +1605,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .footer__wave {
     left: -25%;
     width: 317%;
-    bottom: 245px;
+    bottom: 145px;   /* Figma 245 − 100: lowered per request */
   }
 
   /* Footer — Figma mobile: logo / links row / social / copyright; no legal */

@@ -346,15 +346,15 @@
     wrap.dataset.dragged = '1';
   }, { passive: true });
   wrap.addEventListener('touchend', function () {
-    /* wait out iOS momentum, then snap + resume */
+    /* CSS scroll-snap centres the card natively; we only wait out the
+       momentum, keep the loop in the middle set, then resume auto-advance.
+       No JS centreCard here — that was the post-release "catch". */
     if (touchSettle) window.clearTimeout(touchSettle);
     touchSettle = window.setTimeout(function () {
       normalize();
       updateWheel();
-      const vis = visibleCards();
-      if (vis[currentIdx]) centreCard(vis[currentIdx], true);
       startTimer();
-    }, 500);
+    }, 600);
   }, { passive: true });
 })();
 
