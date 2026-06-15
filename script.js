@@ -419,9 +419,15 @@
 
   hero.classList.add('hero--scene');
 
-  const SRCS = [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) {
-    return 'assets/images/hero-photo-' + n + '.png';
-  });
+  /* the 24 landing photos — shuffled so the planes pick them up in a
+     random order on every load instead of a fixed 1..n sequence */
+  const SRCS = [119, 120, 121, 123, 124, 125, 126, 162, 163, 164, 165, 166,
+                167, 169, 171, 172, 174, 175, 178, 179, 180, 181, 182, 183]
+    .map(function (n) { return 'assets/images/Rectangle%20' + n + '.png'; });
+  for (let i = SRCS.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = SRCS[i]; SRCS[i] = SRCS[j]; SRCS[j] = t;
+  }
   /* counts bumped ~30% on full desktop for a denser field; smaller
      screens and mobile scale back so the hero doesn't get cluttered */
   const VW = window.innerWidth;
@@ -624,6 +630,10 @@
 })();
 
 
+/* The listing background line is a static decorative sweep behind the cards
+   (no scroll-draw) — see .listing__line in style.css. */
+
+
 /* ----------------------------------------------------------------
    6. Custom cursor — orange dot with a lerped follow.
    Morphs over links/buttons, and over the news slider it becomes a
@@ -699,8 +709,21 @@
     cursor.style.height = '';
   }
   document.querySelectorAll('.btn-circle, button, .nav__link, .nav__lang').forEach(function (el) {
+    /* listing filters / breadcrumb use a plain colour hover — no magnet wrap */
+    if (el.closest('.listing__filters') || el.closest('.listing__crumb')) return;
     el.addEventListener('mouseenter', function () { engage(el); });
     el.addEventListener('mouseleave', release);
+  });
+
+  /* listing story cards: big "DISCOVER" circle over the card body, but a
+     plain (clickable) cursor over the individual tags */
+  document.querySelectorAll('.story-card').forEach(function (card) {
+    card.addEventListener('mouseenter', function () { cursor.classList.add('cursor--discover'); });
+    card.addEventListener('mouseleave', function () { cursor.classList.remove('cursor--discover'); });
+    card.querySelectorAll('.story-card__tag').forEach(function (tag) {
+      tag.addEventListener('mouseenter', function () { cursor.classList.remove('cursor--discover'); });
+      tag.addEventListener('mouseleave', function () { cursor.classList.add('cursor--discover'); });
+    });
   });
 
   /* news slider: DISCOVER in the middle, arrows at the edges */
@@ -744,6 +767,8 @@
    ---------------------------------------------------------------- */
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  /* homepage only — inner pages (no hero) don't get the logo splash */
+  if (!document.getElementById('hero')) return;
 
   /* splash built by script so no-JS visitors never get blocked */
   const pre = document.createElement('div');
@@ -823,7 +848,12 @@
     ['.news__heading', 0], ['.news__filters', 130],
     ['.news__carousel-wrap', 220], ['.news__cta', 0],
 
-    ['.footer__logo', 0], ['.footer__col', 120], ['.footer__legal-nav', 240]
+    ['.footer__logo', 0], ['.footer__col', 120], ['.footer__legal-nav', 240],
+
+    /* inner-page (listing) — only present on Listing.html
+       (cards are NOT revealed here: the late trigger left lower rows blank
+       on load — they're shown immediately instead) */
+    ['.listing__title', 0], ['.listing__filters', 120]
   ];
 
   const targets = [];
@@ -844,9 +874,142 @@
       /* clear the stagger delay once landed so later hovers stay snappy */
       window.setTimeout(function () { el.style.transitionDelay = ''; }, 2000);
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -130px 0px' });
+  }, { threshold: 0.2, rootMargin: '0px 0px -22% 0px' });   /* fire later — well into view */
 
   targets.forEach(function (el) { obs.observe(el); });
+
+  /* Safety net: the observer fires 22% early (rootMargin), so elements that
+     settle in the bottom of the viewport at the page end — the footer columns
+     — would never trigger and stay hidden. Reveal any stragglers near the end. */
+  function flushAtBottom() {
+    const atEnd = window.scrollY + window.innerHeight >=
+                  document.documentElement.scrollHeight - 120;
+    if (!atEnd) return;
+    targets.forEach(function (el) {
+      if (el.classList.contains('is-in')) return;
+      el.classList.add('is-in');
+      obs.unobserve(el);
+      window.setTimeout(function () { el.style.transitionDelay = ''; }, 2000);
+    });
+  }
+  window.addEventListener('scroll', flushAtBottom, { passive: true });
+  window.addEventListener('resize', flushAtBottom);
+  flushAtBottom();
+})();
+
+
+/* ----------------------------------------------------------------
+   8.6 Draw-on-scroll — the pillar illustrations and the Challenge circle
+   rings draw themselves in as they scroll into view, all with the same
+   hand-drawn stroke effect:
+     · hands (stroke art) + circle rings → stroke-dashoffset draw
+     · flower (filled art) → fetched + inlined, each shape's outline traces
+       on, then the colour fills in
+   Reduced-motion / no-IO users get the final static state.
+   ---------------------------------------------------------------- */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+
+  /* inject an SVG ring into every challenge circle (replaces the CSS border) */
+  const rings = [];
+  document.querySelectorAll('.challenge__circle').forEach(function (c) {
+    const svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('class', 'challenge__circle-ring');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    /* keep the aspect ratio so the ring stays a true circle (not an oval) */
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.setAttribute('aria-hidden', 'true');
+    const ring = document.createElementNS(SVGNS, 'circle');
+    ring.setAttribute('cx', '50');
+    ring.setAttribute('cy', '50');
+    ring.setAttribute('r', '49.5');
+    ring.setAttribute('fill', 'none');
+    ring.setAttribute('stroke', '#ff6900');
+    /* plain scaling stroke draws reliably as a full circle (non-scaling-stroke
+       broke the dash → partial arcs). Width is set per-circle below so it
+       renders a constant ~1px at every circle size. */
+    svg.appendChild(ring);
+    c.insertBefore(svg, c.firstChild);
+    c.classList.add('has-ring');
+    rings.push(ring);
+  });
+
+  /* keep the ring line ~1px regardless of the circle's rendered size:
+     stroke-width (in the 100-unit viewBox) = 100 / circle-width-in-px */
+  function sizeRings() {
+    rings.forEach(function (r) {
+      const w = r.ownerSVGElement && r.ownerSVGElement.parentNode.offsetWidth;
+      if (w) r.style.strokeWidth = (100 / w).toFixed(3);
+    });
+  }
+  sizeRings();
+  window.addEventListener('load', sizeRings);
+  window.addEventListener('resize', sizeRings);
+
+  if (reduce) return;   /* leave everything in its final drawn state */
+
+  /* prime stroke paths: full-length dash, fully offset (hidden) */
+  function prime(el) {
+    try {
+      const len = el.getTotalLength();
+      el.style.strokeDasharray  = len;
+      el.style.strokeDashoffset = len;
+    } catch (e) {}
+  }
+  document.querySelectorAll('[data-draw="stroke"] path').forEach(prime);
+  rings.forEach(prime);
+
+  const obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      if (el.dataset.draw === 'stroke' || el.dataset.draw === 'sketch') {
+        /* stagger the strokes so they draw one after another */
+        const sketch = el.dataset.draw === 'sketch';
+        const step = sketch ? 12 : 180;
+        Array.prototype.slice.call(el.querySelectorAll('path')).forEach(function (p, i) {
+          p.style.transitionDelay = sketch
+            ? (i * step) + 'ms, ' + (i * step + 1300) + 'ms, ' + (i * step + 2100) + 'ms'  /* draw, fill, then drop the tracing stroke */
+            : (i * step) + 'ms';
+          p.style.strokeDashoffset = '0';
+          if (sketch) { p.style.fillOpacity = '1'; p.style.strokeOpacity = '0'; }
+        });
+      } else if (el.classList.contains('challenge__circle')) {
+        const ring = el.querySelector('.challenge__circle-ring circle');
+        if (ring) ring.style.strokeDashoffset = '0';
+      }
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.2, rootMargin: '0px 0px -18% 0px' });   /* start drawing later */
+
+  document.querySelectorAll('[data-draw="stroke"], .challenge__circle')
+    .forEach(function (el) { obs.observe(el); });
+
+  /* Flower: it's filled line-art, so fetch + inline it, trace each shape's
+     outline (stroke = its own fill colour), then fade the fill in. */
+  const flowerImg = document.querySelector('[data-draw="flower"]');
+  if (flowerImg) {
+    fetch(flowerImg.getAttribute('src'))
+      .then(function (r) { return r.text(); })
+      .then(function (txt) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = txt.trim();
+        const svg = tmp.querySelector('svg');
+        if (!svg) return;
+        svg.setAttribute('data-draw', 'sketch');
+        svg.setAttribute('aria-hidden', 'true');
+        flowerImg.replaceWith(svg);
+        Array.prototype.slice.call(svg.querySelectorAll('path')).forEach(function (p) {
+          p.style.stroke = p.getAttribute('fill') || 'currentColor';
+          p.style.fillOpacity = '0';
+          prime(p);
+        });
+        obs.observe(svg);
+      })
+      .catch(function () { /* fetch blocked (e.g. file://) → static image stays */ });
+  }
 })();
 
 
@@ -883,6 +1046,51 @@
 
 
 /* ----------------------------------------------------------------
+   8.8 Approach bubbles/dots — subtle cursor parallax on top of the CSS
+   idle float. Each element drifts toward the cursor by its own amount and
+   direction (set from a stable per-index pseudo-random), so the motion
+   reads as natural rather than uniform. Desktop pointers only.
+   ---------------------------------------------------------------- */
+(function () {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const nodes = document.querySelectorAll('.approach__bubbles .pillar-bubble, .approach__bubbles .approach-dot');
+  if (!nodes.length) return;
+
+  const items = [];
+  nodes.forEach(function (el, i) {
+    /* stable 0..1 pseudo-random per element */
+    const s = Math.sin((i + 1) * 53.17) * 1000;
+    const r = s - Math.floor(s);
+    const isDot = el.classList.contains('approach-dot');
+    const base  = isDot ? 13 : 8;            /* dots drift a touch more */
+    items.push({
+      el: el,
+      fx: (base + r * 11) * (r > 0.5 ? 1 : -1),       /* magnitude + direction */
+      fy: (base + (1 - r) * 9) * (i % 2 ? -1 : 1),
+      cx: 0, cy: 0
+    });
+  });
+
+  let tx = 0, ty = 0;   /* cursor, normalised −1..1 from viewport centre */
+  window.addEventListener('mousemove', function (e) {
+    tx = (e.clientX / window.innerWidth  - 0.5) * 2;
+    ty = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  (function loop() {
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      it.cx += (tx * it.fx - it.cx) * 0.05;   /* eased follow */
+      it.cy += (ty * it.fy - it.cy) * 0.05;
+      it.el.style.transform = 'translate3d(' + it.cx.toFixed(2) + 'px,' + it.cy.toFixed(2) + 'px,0)';
+    }
+    window.requestAnimationFrame(loop);
+  })();
+})();
+
+
+/* ----------------------------------------------------------------
    9. Broken image fallback — show a tinted placeholder
    ---------------------------------------------------------------- */
 (function () {
@@ -896,4 +1104,53 @@
       }
     });
   });
+})();
+
+
+/* ----------------------------------------------------------------
+   10. Dropdowns — generic toggle for [data-dropdown] (listing filters
+   + breadcrumb). Click toggles; clicking another closes the rest;
+   click-outside / Escape closes all. (No-op on pages without any.)
+   ---------------------------------------------------------------- */
+(function () {
+  const drops = Array.prototype.slice.call(document.querySelectorAll('[data-dropdown]'));
+  if (!drops.length) return;
+
+  function closeAll(except) {
+    drops.forEach(function (d) {
+      if (d === except) return;
+      d.classList.remove('is-open');
+      const t = d.querySelector('button[aria-expanded]');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  drops.forEach(function (d) {
+    const toggle = d.querySelector('button');
+    if (!toggle) return;
+    /* the toggle's editable label (filters wrap it in a <span>; the breadcrumb
+       has a bare text node before the chevron) */
+    const labelSpan = toggle.querySelector('span');
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const open = d.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', String(open));
+      closeAll(open ? d : null);
+    });
+    /* picking an option writes it back onto the toggle, then closes */
+    d.querySelectorAll('[role="menuitem"]').forEach(function (item) {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const text = item.textContent.trim();
+        if (labelSpan) labelSpan.textContent = text;
+        else if (toggle.firstChild) toggle.firstChild.nodeValue = text + ' ';
+        d.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  });
+
+  document.addEventListener('click', function () { closeAll(null); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(null); });
 })();

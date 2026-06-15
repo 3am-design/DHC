@@ -139,8 +139,9 @@ ul   { list-style: none; }
 .bullet-list--sm { gap: 26px; }
 .bullet-list--sm .bullet-list__item { font-size: 20px; line-height: 26px; }
 
-/* Pillar cards use orange dots (Figma spec) */
-.pillar-card .bullet-list__item::before { background: var(--c-orange); }
+/* Pillar cards + Our Foundation use orange dots */
+.pillar-card .bullet-list__item::before,
+.intro__bullets .bullet-list__item::before { background: var(--c-orange); }
 
 /* Circle CTA button — white circle; on hover it grows rightward
    into a full rounded pill behind the label */
@@ -373,6 +374,17 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   transition: color var(--ease);
 }
 .nav__link:hover { color: var(--c-orange); }
+/* current section — small orange dot beneath the link */
+.nav__link--active { position: relative; }
+.nav__link--active::after {
+  content: '';
+  position: absolute;
+  bottom: -11px; left: 50%;
+  transform: translateX(-50%);
+  width: 5.5px; height: 5.5px;
+  border-radius: 50%;
+  background: var(--c-orange);
+}
 
 /* Actions — right column, right-aligned */
 .nav__actions {
@@ -1023,7 +1035,37 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   position: absolute;
   pointer-events: none;
 }
-.pillar-card__illustration img { width: 100%; height: auto; }
+.pillar-card__illustration img,
+.pillar-card__illustration svg { width: 100%; height: auto; display: block; }
+.pillar-card__illustration svg { overflow: visible; }
+
+/* ── Draw-on-scroll animations (script.js arms + triggers on view) ──────
+   stroke art (hands, circle rings): JS sets dasharray/offset, CSS eases it.
+   filled art (flower): JS fetches + inlines it, traces each shape's outline,
+   then fills it in — the same "drawn by hand" feel. */
+[data-draw="stroke"] path { transition: stroke-dashoffset 1.6s ease; }
+
+[data-draw="sketch"] path {
+  stroke-width: 0.75px;
+  /* outline traces on (1.8s) → colour fills in → the tracing stroke fades
+     out so the final shape matches the original filled art (no extra weight) */
+  transition: stroke-dashoffset 1.8s ease,
+              fill-opacity 0.9s ease 1.3s,
+              stroke-opacity 0.6s ease 2.1s;
+}
+
+/* Challenge circle outline drawn as an SVG ring (JS injects it) */
+.challenge__circle.has-ring { border-color: transparent; }
+.challenge__circle-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+}
+.challenge__circle-ring circle { transition: stroke-dashoffset 1.6s ease; }
 .pillar-card--issues .pillar-card__illustration {
   width: 33%;          /* a touch larger */
   right: 7%;
@@ -1115,6 +1157,36 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .approach-dot--4 { width:24px; height:24px; left:86.6%; top: 355px; }
 .approach-dot--5 { width:55px; height:55px; left:10.6%; top:-399px; }
 .approach-dot--6 { width:51px; height:51px; left:53.2%; top:-326px; }
+
+/* ── Idle float — a gentle wandering drift, varied per element so the group
+   never moves in unison. Uses the `translate` property so the JS cursor
+   parallax (which uses `transform`) and the responsive `scale` all compose.
+   Per-element amplitude (--fx/--fy), duration (--fd) and phase (--fdl). */
+@keyframes approach-float {
+  0%   { translate: 0 0; }
+  25%  { translate: var(--fx) calc(var(--fy) * 0.35); }
+  50%  { translate: calc(var(--fx) * 0.25) var(--fy); }
+  75%  { translate: calc(var(--fx) * -0.6) calc(var(--fy) * 0.55); }
+  100% { translate: 0 0; }
+}
+.pillar-bubble, .approach-dot {
+  animation: approach-float var(--fd, 7s) ease-in-out var(--fdl, 0s) infinite;
+  will-change: translate, transform;
+}
+.pillar-bubble--1 { --fx:  9px; --fy: -11px; --fd: 7.5s; --fdl: -1s;   }
+.pillar-bubble--2 { --fx: -7px; --fy:  12px; --fd: 9s;   --fdl: -3.5s; }
+.pillar-bubble--3 { --fx: 11px; --fy:   8px; --fd: 6.5s; --fdl: -2s;   }
+.pillar-bubble--4 { --fx: -9px; --fy:  -9px; --fd: 8.2s; --fdl: -5s;   }
+.pillar-bubble--5 { --fx:  6px; --fy:  13px; --fd: 7s;   --fdl: -0.5s; }
+.approach-dot--1  { --fx: -8px; --fy:  10px; --fd: 6s;   --fdl: -2.5s; }
+.approach-dot--2  { --fx: 10px; --fy:  -7px; --fd: 8.8s; --fdl: -4s;   }
+.approach-dot--3  { --fx: -6px; --fy: -12px; --fd: 7.3s; --fdl: -1.5s; }
+.approach-dot--4  { --fx:  8px; --fy:   9px; --fd: 6.8s; --fdl: -3s;   }
+.approach-dot--5  { --fx:-11px; --fy:   6px; --fd: 9.5s; --fdl: -0.8s; }
+.approach-dot--6  { --fx:  7px; --fy: -10px; --fd: 7.8s; --fdl: -5.5s; }
+@media (prefers-reduced-motion: reduce) {
+  .pillar-bubble, .approach-dot { animation: none; }
+}
 
 /* White cards — row 2: card 4 in col 1, card 5 in col 2, col 3 empty */
 /* translateX is a % of the card's column width so the scatter scales with the grid
@@ -1528,7 +1600,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .approach-card { width: 100%; padding: 24px 28px; }
   .approach-card__title { font-size: 24px; }
   /* shrink the photo bubbles so they don't crowd the narrower cards */
-  .pillar-bubble, .approach-dot { transform: scale(0.72); transform-origin: top left; }
+  /* use the `scale` property (not transform) so the cursor-parallax transform
+     and the float translate still apply on top */
+  .pillar-bubble, .approach-dot { scale: 0.72; transform-origin: top left; }
 
   .news__carousel { --news-card-w: 680px; }
   .news-card { height: 400px; }
@@ -1735,7 +1809,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
     grid-row: auto;
     z-index: 1;
   }
-  .pillar-bubble { transform: none; }
+  .pillar-bubble { transform: none; scale: none; }   /* reset the ≤1024 scale */
   .approach-dot { display: none; }
   /* offsets are relative to the centred card column (440 design width),
      so they hold their place on wider phones too */
@@ -1821,4 +1895,393 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .hero__headline { font-size: 34px; line-height: 40px; }
   .approach-card  { width: 260px !important; }
   .news__carousel { --news-card-w: 285px; }
+}
+
+
+/* ================================================================
+   INNER PAGE — LISTING (Our Stories)
+   Centred content: breadcrumb · title · filter bar · card grid · pager
+   ================================================================ */
+/* solid white nav for inner pages (no hero behind it) */
+.nav--solid { background: var(--c-white); box-shadow: 0 1px 0 rgba(0,0,0,0.1); }
+
+.listing {
+  position: relative;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 140px var(--gm) 125px;
+}
+
+/* background decor — soft orange/white glows + a faint sweeping line.
+   inset:0 (not 100vw) on purpose: the body has zoom:0.9 below 1800px and a
+   100vw box gets scaled to ~90% width, which shifts/jumps on resize. The body
+   peach already covers the edges and the footer fade is full-width, so the
+   decor only needs to span the (full-width below 1920) listing. */
+.listing__decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+/* soft organic blur glows (same PNGs as the homepage) */
+.listing__blur { position: absolute; max-width: none; pointer-events: none; }
+.listing__blur--a { width: 1200px; right: -260px; top: -420px; opacity: 0.85; }  /* orange, top-right */
+.listing__blur--b { width: 1500px; left: 50%; transform: translateX(-50%); top: -120px; opacity: 0.25; } /* faint white wash, top */
+.listing__blur--c { width: 1000px; left: -320px; top: 140px; opacity: 0.6; }     /* orange, left */
+.listing__line {
+  position: absolute;
+  /* start ~100px below the top of the first card row (grid top ≈ 394px) */
+  top: 455px;
+  /* full-bleed across the viewport (over-sized so neither zoom state nor a
+     >1920 viewport leaves a side gap); body overflow-x:clip trims the excess */
+  left: 50%;
+  width: 116vw;
+  transform: translateX(-50%);
+  /* DEFINITE height — height:auto / aspect-ratio let preserveAspectRatio="none"
+     collapse the svg to 0px (invisible flat line) in some browsers. */
+  height: 64vw;
+  max-height: 1200px;
+  display: block;
+  z-index: 0;            /* behind the cards (which are position:relative z-index:1) */
+  pointer-events: none;
+}
+/* soft fade into the white footer (no sharp peach→white edge).
+   anchored to the footer top and full viewport width so it never leaves a
+   seam — the white belongs to the footer and bleeds up over the page end */
+.listing-page .footer { position: relative; }
+.listing-page .footer::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: -120px;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--c-white));
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* breadcrumb (sits just under the nav; "Impact" is a dropdown) */
+.listing__crumb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-sans);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--c-black);
+}
+.listing__crumb a { transition: color var(--ease); }
+.listing__crumb a:hover { color: var(--c-orange); }
+.listing__crumb-sep { color: rgba(0,0,0,0.4); }
+
+.listing__crumb-drop { position: relative; display: inline-flex; }
+.listing__crumb-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--f-sans);
+  font-size: 15px;
+  color: var(--c-black);
+  transition: color var(--ease);
+}
+.listing__crumb-toggle:hover { color: var(--c-orange); }
+.listing__crumb-toggle .listing__chev { width: 10px; height: 7px; }
+.listing__crumb-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 170px;
+  background: var(--c-white);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(0,0,0,0.1);
+  padding: 6px;
+  display: none;
+  z-index: 30;
+  text-align: left;
+}
+.listing__crumb-drop.is-open .listing__crumb-menu { display: block; }
+
+/* title */
+.listing__title {
+  font-family: var(--f-serif);
+  font-size: 70px;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+  margin: 30px 0 36px;
+}
+
+/* filter bar (each item is a dropdown) */
+.listing__filters {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 40px;
+  max-width: 1306px;
+  margin: 0 auto 56px;
+}
+.listing__filter {
+  position: relative;
+  flex: 1 1 0;
+  max-width: 270px;
+  border-bottom: 1px solid rgba(0,0,0,0.25);
+  transition: border-color var(--ease);
+}
+.listing__filter-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--c-black);
+  transition: color var(--ease);
+}
+/* hover: line + text (and chevron, via currentColor) go orange — no box/outline */
+.listing__filter:hover { border-color: var(--c-orange); }
+.listing__filter:hover .listing__filter-toggle,
+.listing__filter.is-open .listing__filter-toggle { color: var(--c-orange); }
+.listing__filter.is-open { border-color: var(--c-orange); }
+.listing__filter-toggle:focus,
+.listing__filter-toggle:focus-visible,
+.listing__crumb-toggle:focus,
+.listing__crumb-toggle:focus-visible { outline: none; }
+.listing__chev { width: 12px; height: 8px; flex-shrink: 0; color: currentColor; transition: transform var(--ease); }
+.listing__filter.is-open .listing__chev,
+.listing__crumb-drop.is-open .listing__chev { transform: rotate(180deg); }
+
+/* dropdown menus (filter + breadcrumb share the look) */
+.listing__filter-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 100%;
+  background: var(--c-white);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(0,0,0,0.1);
+  padding: 6px;
+  display: none;
+  z-index: 30;
+}
+.listing__filter.is-open .listing__filter-menu { display: block; }
+.listing__filter-menu a,
+.listing__crumb-menu a {
+  display: block;
+  padding: 9px 12px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  color: var(--c-black);
+  border-radius: 7px;
+  white-space: nowrap;
+  transition: background var(--ease), color var(--ease);
+}
+.listing__filter-menu a:hover,
+.listing__crumb-menu a:hover { color: var(--c-orange); }
+
+.listing__clear {
+  flex-shrink: 0;
+  align-self: center;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 100px;
+  padding: 7px 18px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  color: var(--c-black);
+  transition: background var(--ease), color var(--ease), border-color var(--ease);
+}
+.listing__clear:hover { background: var(--c-orange); border-color: var(--c-orange); color: var(--c-white); }
+
+/* card grid */
+.listing__grid {
+  display: grid;
+  /* minmax(0,1fr) — NOT 1fr (= minmax(auto,1fr)). The auto floor is the item's
+     min-content, which for a card with an image becomes the image's intrinsic
+     width, so the tracks refuse to shrink and the grid overflows on resize.    */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 56px 40px;
+  max-width: 1565px;
+  margin: 0 auto;
+}
+
+.story-card {
+  background: var(--c-white);
+  padding: 30px 27px 30px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;          /* let the card shrink inside its grid track */
+  position: relative;
+  z-index: 1;            /* sit above the background line (.listing__line, z-index:0) */
+}
+.story-card__title {
+  font-family: var(--f-serif);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 32px;
+  color: var(--c-black);
+}
+.story-card__desc {
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--c-black);
+  margin-top: 14px;
+}
+.story-card__category {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--c-orange);
+  margin-top: 22px;
+}
+.story-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.story-card__tag {
+  background: #fff4ec;
+  border-radius: 100px;
+  padding: 4px 13px;
+  font-family: var(--f-sans);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--c-black);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease);
+}
+/* only the tag the cursor is actually over turns orange (not all tags on
+   card hover) — the cursor also drops the DISCOVER state over a tag (see JS) */
+.story-card__tag:hover { background: var(--c-orange); color: var(--c-white); }
+.story-card__thumb {
+  margin-top: auto;          /* bottom-align the image across the row */
+  aspect-ratio: 306 / 187;
+  overflow: hidden;
+  background: rgba(0,0,0,0.05);
+}
+/* keep a little breathing room above a bottom-pinned image */
+.story-card__tags { margin-bottom: 20px; }
+.story-card__tags:last-child { margin-bottom: 0; }
+/* text-only + logo cards: drop the category + tags to the bottom of the card */
+.story-card--text .story-card__category,
+.story-card--logo .story-card__category { margin-top: auto; }
+
+/* logo card — brand logo sits at the top, above the title */
+.story-card__logo {
+  height: 50px;
+  margin-bottom: 26px;
+  display: flex;
+  align-items: center;
+}
+.story-card__logo img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
+/* per-logo sizing — both left-aligned to the card/text edge */
+.story-card__logo img[src*="logo-pfpw"]  { height: 40px; }   /* -20% */
+.story-card__logo img[src*="logo-barts"] { height: 55px; }   /* tuned size */
+.story-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.story-card:hover .story-card__thumb img { transform: scale(1.05); }
+/* hover: copy turns orange */
+.story-card__title, .story-card__desc { transition: color var(--ease); }
+.story-card { cursor: pointer; }
+.story-card:hover .story-card__title,
+.story-card:hover .story-card__desc { color: var(--c-orange); }
+
+/* pagination */
+.listing__pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 90px;
+}
+.pager__arrow {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--c-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--ease), transform var(--ease);
+}
+.pager__arrow:hover { opacity: 0.88; }
+.pager__arrow--prev:hover { transform: translateX(-2px); }
+.pager__arrow--next:hover { transform: translateX(2px); }
+.pager__arrow img { width: 20px; filter: brightness(0) invert(1); }
+.pager__arrow--prev img { transform: rotate(180deg); }
+/* current page — white circle with dark number (orange arrows flank it) */
+.pager__num {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--c-white);
+  color: var(--c-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-sans);
+  font-size: 19px;
+  margin-left: 6px;
+}
+.pager__total {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  color: var(--c-black);
+  margin-right: 12px;
+}
+
+
+/* ── Listing responsive ───────────────────────────────────────────
+   The card design itself never changes across breakpoints — only the
+   number of columns does (4 → 3 → 2 → 1). The grid is fluid between
+   breakpoints, so resizing the window never breaks the card area.      */
+@media (max-width: 1280px) { .listing__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1024px) { .listing__title { font-size: 56px; } }
+@media (max-width: 900px)  { .listing__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 32px; } }
+@media (max-width: 767px) {
+  .listing { padding: 104px var(--gm-mob) 130px; }
+  .listing__title { font-size: 38px; margin: 16px 0 32px; }
+  .listing__crumb { font-size: 13px; }
+  .listing__filters {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 18px 24px;
+    margin-bottom: 36px;
+  }
+  .listing__filter { flex: 1 1 40%; max-width: none; font-size: 15px; }
+  /* clear-all drops onto its own row (the grown filters fill each row),
+     centred via auto side margins */
+  .listing__clear { margin: 6px auto 0; }
+  /* column gap never wider than the page side margin */
+  .listing__grid { gap: 22px var(--gm-mob); }
+  .listing__pager { margin-top: 56px; }
+  /* keep the desktop circle:arrow:number proportions (62/20/19) at 46px */
+  .pager__arrow, .pager__num { width: 46px; height: 46px; }
+  .pager__arrow img { width: 15px; }
+  .pager__num { font-size: 14px; }
+}
+@media (max-width: 600px) {
+  .listing__grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
