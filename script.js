@@ -59,7 +59,7 @@
     btn.setAttribute('aria-expanded', String(open));
     menu.setAttribute('aria-hidden', String(!open));
     document.documentElement.classList.toggle('lock-scroll', open);
-    document.body.classList.toggle('menu-open', open);   /* flips the custom cursor white */
+    document.body.classList.toggle('menu-open', open);   /* white menu keeps the base orange cursor */
     if (window.__lenis) { open ? window.__lenis.stop() : window.__lenis.start(); }
   }
 
@@ -68,9 +68,75 @@
   });
   if (close) close.addEventListener('click', function () { setOpen(false); });
 
-  /* any nav choice (links, 中文) closes the overlay */
-  menu.querySelectorAll('.nav__mobile-link, .nav__mobile-sublink, .nav__mobile-lang')
+  /* 1st-level accordion: clicking a section pops its 2nd-level panel open
+     (pushing the rest down); opening one collapses any other — only one open
+     at a time. Sections without a panel (Connect) are left as plain links. */
+  const items = Array.prototype.slice.call(menu.querySelectorAll('.nav__mobile-item'));
+  items.forEach(function (item) {
+    const link = item.querySelector('.nav__mobile-link');
+    const sub  = item.querySelector('.nav__mobile-sub');
+    if (!link || !sub) return;
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const wasOpen = item.classList.contains('is-open');
+      items.forEach(function (it) {
+        it.classList.remove('is-open');
+        const l = it.querySelector('.nav__mobile-link');
+        if (l) l.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        item.classList.add('is-open');
+        link.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  /* any real navigation choice (2nd-level link, Connect, footer links, 中文)
+     closes the overlay; the section toggle buttons above do not */
+  menu.querySelectorAll('.nav__mobile-sub a, a.nav__mobile-link, .nav__mobile-sublink, .nav__mobile-lang')
     .forEach(function (l) { l.addEventListener('click', function () { setOpen(false); }); });
+})();
+
+
+/* ----------------------------------------------------------------
+   2.5 Search overlay — full-screen orange search, opened from either
+   the desktop search button or the mobile menu's search button.
+   Closes on the × button or Escape; locks page scroll while open.
+   ---------------------------------------------------------------- */
+(function () {
+  const overlay = document.getElementById('search-overlay');
+  if (!overlay) return;
+  const openers  = document.querySelectorAll('.nav__search-btn, .nav__mobile-search');
+  const closeBtn = overlay.querySelector('.search-overlay__close');
+  const input    = overlay.querySelector('.search-overlay__input');
+  const mobile   = document.getElementById('mobile-menu');
+  const burger   = document.querySelector('.nav__hamburger');
+
+  function setOpen(open) {
+    overlay.classList.toggle('search-overlay--open', open);
+    overlay.setAttribute('aria-hidden', String(!open));
+    document.documentElement.classList.toggle('lock-scroll', open);
+    document.body.classList.toggle('search-open', open);   /* orange overlay → white cursor */
+    if (window.__lenis) { open ? window.__lenis.stop() : window.__lenis.start(); }
+    if (open) window.setTimeout(function () { if (input) input.focus(); }, 80);
+  }
+
+  openers.forEach(function (b) {
+    b.addEventListener('click', function () {
+      /* if the search lives inside the open mobile menu, close that first */
+      if (mobile && mobile.classList.contains('nav__mobile-menu--open')) {
+        mobile.classList.remove('nav__mobile-menu--open');
+        mobile.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('menu-open');       /* drop the white-menu cursor state */
+        if (burger) burger.setAttribute('aria-expanded', 'false');
+      }
+      setOpen(true);
+    });
+  });
+  if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('search-overlay--open')) setOpen(false);
+  });
 })();
 
 
@@ -367,6 +433,30 @@
       startTimer();
     }, 600);
   }, { passive: true });
+
+  /* ---- click: navigate / page ----
+     Runs on every device (desktop + touch). A drag/swipe sets data-dragged,
+     which suppresses the click. On fine pointers the slider edges page
+     prev/next (matching the arrow cursor); anywhere else a card click opens
+     the article. On touch there are no edge zones — any tap opens the article. */
+  const CLICK_EDGE = 0.22;
+  wrap.addEventListener('click', function (e) {
+    if (wrap.dataset.dragged) { delete wrap.dataset.dragged; return; }
+    /* The drag uses setPointerCapture, which retargets the click to the wrap —
+       so e.target is unreliable here. Hit-test by coordinates instead. */
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    /* tags are inert (plain cursor, like the listing) */
+    if (hit && hit.closest('.news-card__tag')) return;
+    /* edges (fine pointers only) → page prev/next, matching the arrow cursor */
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const r = wrap.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      if (x < CLICK_EDGE)     { if (window.newsSlider) window.newsSlider.prev(); return; }
+      if (x > 1 - CLICK_EDGE) { if (window.newsSlider) window.newsSlider.next(); return; }
+    }
+    /* middle → open the article */
+    if (hit && hit.closest('.news-card')) window.location.href = 'Articles.html';
+  });
 })();
 
 
@@ -662,8 +752,18 @@
   let cx = tx, cy = ty;
   let magnet = null;           /* element the cursor is snapped onto */
 
+  /* hidden until the pointer first moves — otherwise on (re)load it would
+     appear at screen-centre and visibly fly to the mouse */
+  let primed = false;
+  cursor.classList.add('cursor--hidden');
+
   document.addEventListener('mousemove', function (e) {
     tx = e.clientX; ty = e.clientY;
+    if (!primed) {
+      /* snap straight to the pointer the first time, so it never flies in */
+      primed = true;
+      cx = tx / zoom; cy = ty / zoom;
+    }
     cursor.classList.remove('cursor--hidden');
   });
   document.documentElement.addEventListener('mouseleave', function () {
@@ -714,8 +814,11 @@
     cursor.style.height = '';
   }
   document.querySelectorAll('.btn-circle, button, .nav__link, .nav__lang').forEach(function (el) {
-    /* listing filters / breadcrumb use a plain colour hover — no magnet wrap */
-    if (el.closest('.listing__filters') || el.closest('.listing__crumb')) return;
+    /* listing filters / breadcrumb use a plain colour hover — no magnet wrap;
+       the mobile menu + search overlay use an underline-draw hover instead of
+       the cursor frame */
+    if (el.closest('.listing__filters') || el.closest('.listing__crumb') ||
+        el.closest('.nav__mobile-menu') || el.closest('.search-overlay')) return;
     el.addEventListener('mouseenter', function () { engage(el); });
     el.addEventListener('mouseleave', release);
   });
@@ -741,8 +844,11 @@
       return (e.clientX - r.left) / r.width;
     }
     function setMode(e) {
-      const x = zone(e);
       cursor.classList.remove('cursor--discover', 'cursor--prev', 'cursor--next');
+      /* over a tag → plain cursor (tags are their own thing, like the listing) */
+      if (e.target.closest('.news-card__tag')) return;
+      /* edges → prev/next arrows, middle → DISCOVER */
+      const x = zone(e);
       if      (x < EDGE)     cursor.classList.add('cursor--prev');
       else if (x > 1 - EDGE) cursor.classList.add('cursor--next');
       else                   cursor.classList.add('cursor--discover');
@@ -753,13 +859,8 @@
       cursor.classList.remove('cursor--discover', 'cursor--prev', 'cursor--next');
     });
 
-    wrap.addEventListener('click', function (e) {
-      if (wrap.dataset.dragged) { delete wrap.dataset.dragged; return; }
-      if (!window.newsSlider) return;
-      const x = zone(e);
-      if      (x < EDGE)     window.newsSlider.prev();
-      else if (x > 1 - EDGE) window.newsSlider.next();
-    });
+    /* click handling (edge paging + card navigation) lives in the carousel
+       module so it also works on touch; here we only drive the cursor visual */
   }
 })();
 
@@ -870,14 +971,25 @@
     });
   });
 
+  function land(el) {
+    el.classList.add('is-in');
+    obs.unobserve(el);
+    /* clear the stagger delay once landed so later hovers stay snappy */
+    window.setTimeout(function () { el.style.transitionDelay = ''; }, 2000);
+  }
+
   const obs = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      el.classList.add('is-in');
-      obs.unobserve(el);
-      /* clear the stagger delay once landed so later hovers stay snappy */
-      window.setTimeout(function () { el.style.transitionDelay = ''; }, 2000);
+      land(el);
+      /* reveal the "Read more" CTA together with the news cards — it sits below
+         the tall carousel, so on its own it would only trigger after scrolling
+         well past the cards (user couldn't see it while viewing the news) */
+      if (el.classList.contains('news__carousel-wrap')) {
+        const cta = document.querySelector('.news__cta');
+        if (cta && !cta.classList.contains('is-in')) land(cta);
+      }
     });
   }, { threshold: 0.2, rootMargin: '0px 0px -22% 0px' });   /* fire later — well into view */
 
@@ -1191,5 +1303,184 @@
         /* user dismissed the share sheet — ignore */
       }
     });
+  });
+})();
+
+
+/* ----------------------------------------------------------------
+   12. Listing story cards — clicking a card opens the article
+   (tags are inert). No carousel here, so e.target is reliable.
+   No-op on pages without any story cards.
+   ---------------------------------------------------------------- */
+(function () {
+  const cards = Array.prototype.slice.call(document.querySelectorAll('.story-card'));
+  if (!cards.length) return;
+  cards.forEach(function (card) {
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('.story-card__tag')) return;   /* tags inert */
+      window.location.href = 'Articles.html';
+    });
+  });
+})();
+
+
+/* ----------------------------------------------------------------
+   13. Desktop mega-menu — hovering Work / Impact / About opens its
+   panel; hovering Connect / logo / actions (or leaving the nav)
+   closes it. Hover devices only; no-op on pages without the markup.
+   ---------------------------------------------------------------- */
+(function () {
+  const nav  = document.getElementById('nav');
+  const mega = document.getElementById('nav-mega');
+  if (!nav || !mega) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const links   = Array.prototype.slice.call(nav.querySelectorAll('.nav__menu .nav__link'));
+  const panels  = Array.prototype.slice.call(mega.querySelectorAll('.nav__mega-panel'));
+  let closeTimer = null;
+
+  /* ---- draw-in illustrations -------------------------------------------
+     Inline each panel's SVG so its strokes can be animated, then redraw it
+     every time the panel opens (same hand-drawn effect as the pillars):
+       · stroke art  → just draw the stroke (dashoffset len → 0)
+       · filled art  → trace each shape's outline, then fade the fill in    */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const drawables = {};   /* panel-key → svg (once inlined) */
+
+  function prime(p) {
+    try { const len = p.getTotalLength(); p.style.strokeDasharray = len; p.style.strokeDashoffset = len; }
+    catch (e) {}
+  }
+  /* getTotalLength() needs the node visible (returns 0 in a display:none
+     subtree), so the dash priming is done lazily the first time a panel opens */
+  function primeSvg(svg) {
+    Array.prototype.slice.call(svg.querySelectorAll('path')).forEach(prime);
+    svg.dataset.primed = '1';
+  }
+  function arm(svg) {                                  /* reset to the undrawn state */
+    const filled = svg.dataset.kind === 'filled';
+    Array.prototype.slice.call(svg.querySelectorAll('path')).forEach(function (p) {
+      p.style.transition = 'none';
+      p.style.strokeDashoffset = p.style.strokeDasharray;
+      if (filled) { p.style.fillOpacity = '0'; p.style.strokeOpacity = '1'; }
+    });
+    void svg.getBoundingClientRect();                  /* flush, so the reset isn't animated */
+    Array.prototype.slice.call(svg.querySelectorAll('path')).forEach(function (p) {
+      p.style.transition = ''; p.style.transitionDelay = '';
+    });
+  }
+  function draw(svg) {
+    if (!svg) return;
+    const filled = svg.dataset.kind === 'filled';
+    const paths = Array.prototype.slice.call(svg.querySelectorAll('path'));
+    const step = +svg.dataset.step || 150;
+    paths.forEach(function (p, i) {
+      const d = i * step;
+      /* filled: trace the outline, ink the fill in while the line is still
+         down (+1.3s), then drop the tracing stroke (+2.1s) — an overlapping
+         handoff (no dead pause), same as the pillar "flower" / Issues art */
+      p.style.transitionDelay = filled ? (d + 'ms, ' + (d + 1300) + 'ms, ' + (d + 2100) + 'ms') : (d + 'ms');
+      p.style.strokeDashoffset = '0';
+      if (filled) { p.style.fillOpacity = '1'; p.style.strokeOpacity = '0'; }
+    });
+  }
+  /* called when a panel opens (now visible): prime the dashes the first time,
+     re-arm on later opens, then kick off the draw on the next frame */
+  function startDraw(svg) {
+    requestAnimationFrame(function () {
+      if (!svg.dataset.primed) primeSvg(svg);   /* measure + dash now that it's visible */
+      arm(svg);                                  /* reset to undrawn instantly (no transition) */
+      requestAnimationFrame(function () { draw(svg); });
+    });
+  }
+
+  panels.forEach(function (panel) {
+    const img = panel.querySelector('img.nav__mega-art');
+    if (!img) return;
+    fetch(img.getAttribute('src'))
+      .then(function (r) { return r.text(); })
+      .then(function (txt) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = txt.trim();
+        const svg = tmp.querySelector('svg');
+        if (!svg) return;
+        svg.setAttribute('class', 'nav__mega-art');
+        svg.setAttribute('aria-hidden', 'true');
+
+        /* attach to the live DOM FIRST — getTotalLength()/getComputedStyle()
+           return 0/empty on a detached node, which would leave the art
+           undrawn-but-visible */
+        img.replaceWith(svg);
+        drawables[panel.dataset.megaPanel] = svg;
+        if (reduce) return;                            /* leave it fully drawn */
+
+        /* Every panel draws like the pillar "flower" / Issues-focused art:
+           each shape traces its own outline (stroke = its own fill colour),
+           then the fill inks in while the trace is still down. Fill can come
+           from a <style> class (Work uses .st0), so read the computed value. */
+        const paths = Array.prototype.slice.call(svg.querySelectorAll('path'));
+        function fillOf(p) {
+          const f = getComputedStyle(p).fill;
+          return (f && f !== 'none' && f !== 'rgba(0, 0, 0, 0)') ? f : '';
+        }
+        const filled = paths.some(fillOf);
+        svg.dataset.kind = filled ? 'filled' : 'stroke';
+        /* spread the stagger over a ~0.7s window so busy art (Work, 50+ shapes)
+           still draws quickly; few clean paths (Impact/About) keep the 150ms beat */
+        svg.dataset.step = paths.length > 12
+          ? String(Math.max(8, Math.round(700 / paths.length)))
+          : '150';
+
+        if (filled) {                                  /* trace: stroke = fill colour, hide fill */
+          paths.forEach(function (p) {
+            const f = fillOf(p);
+            if (f) { p.style.stroke = f; p.style.fillOpacity = '0'; }
+            if (!p.getAttribute('stroke-width')) p.style.strokeWidth = '1';   /* fine trace line (Work) */
+          });
+        } else {                                       /* stroke art (Impact): thin the line */
+          paths.forEach(function (p) {
+            if (!p.getAttribute('stroke-width')) p.style.strokeWidth = '0.7';
+          });
+        }
+        /* priming + first draw happen lazily on open (see startDraw) */
+        if (panel.classList.contains('is-active')) startDraw(svg);
+      })
+      .catch(function () { /* file:// or fetch blocked → static image stays */ });
+  });
+
+  function open(key) {
+    clearTimeout(closeTimer);
+    const wasActive = nav.classList.contains('nav--mega-open') &&
+                      mega.querySelector('.nav__mega-panel.is-active[data-mega-panel="' + key + '"]');
+    nav.classList.add('nav--mega-open');
+    mega.setAttribute('aria-hidden', 'false');
+    panels.forEach(function (p) { p.classList.toggle('is-active', p.dataset.megaPanel === key); });
+    links.forEach(function (l) { l.classList.toggle('nav__link--mega-active', l.dataset.mega === key); });
+    if (!wasActive && !reduce && drawables[key]) startDraw(drawables[key]);
+  }
+  function close() {
+    nav.classList.remove('nav--mega-open');
+    mega.setAttribute('aria-hidden', 'true');
+    panels.forEach(function (p) { p.classList.remove('is-active'); });
+    links.forEach(function (l) { l.classList.remove('nav__link--mega-active'); });
+  }
+
+  /* a section link opens its panel; any other nav link closes the menu */
+  links.forEach(function (l) {
+    l.addEventListener('mouseenter', function () {
+      if (l.dataset.mega) open(l.dataset.mega); else close();
+    });
+  });
+  /* hovering the logo or the right-side actions closes it too */
+  nav.querySelectorAll('.nav__logo, .nav__actions').forEach(function (el) {
+    el.addEventListener('mouseenter', close);
+  });
+
+  /* leaving the whole nav (bar + open panel) closes, with a small grace
+     period so crossing the gap from a link to the panel doesn't flicker */
+  nav.addEventListener('mouseenter', function () { clearTimeout(closeTimer); });
+  nav.addEventListener('mouseleave', function () {
+    clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(close, 120);
   });
 })();

@@ -26,9 +26,9 @@
       </a>
 
       <nav class="nav__menu" aria-label="Main navigation">
-        <a href="#" class="nav__link">Work</a>
-        <a href="#" class="nav__link nav__link--active">Impact</a>
-        <a href="#" class="nav__link">About</a>
+        <a href="#" class="nav__link" data-mega="work">Work</a>
+        <a href="#" class="nav__link nav__link--active" data-mega="impact">Impact</a>
+        <a href="#" class="nav__link" data-mega="about">About</a>
         <a href="#" class="nav__link">Connect</a>
       </nav>
 
@@ -40,6 +40,43 @@
         <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
           <img src="assets/icons/icon-hamburger.svg" alt="" />
         </button>
+      </div>
+    </div>
+
+    <!-- Desktop mega-menu (opens on hover; closes when the cursor leaves the nav) -->
+    <div class="nav__mega" id="nav-mega" aria-hidden="true">
+      <div class="nav__mega-panel" data-mega-panel="work">
+        <span class="nav__mega-label">Work</span>
+        <img class="nav__mega-art" src="assets/images/menu-work.svg" alt="" aria-hidden="true" />
+        <ul class="nav__mega-links">
+          <li><a href="#">Overview</a></li>
+          <li><a href="#">Approach</a></li>
+          <li><a href="#">Our Priorities</a></li>
+          <li><a href="#">Our Initiatives</a></li>
+          <li><a href="#">Partnership</a></li>
+        </ul>
+      </div>
+      <div class="nav__mega-panel" data-mega-panel="impact">
+        <span class="nav__mega-label">Impact</span>
+        <img class="nav__mega-art" src="assets/images/menu-impact.svg" alt="" aria-hidden="true" />
+        <ul class="nav__mega-links">
+          <li><a href="#">Overview</a></li>
+          <li><a href="#">Learning</a></li>
+          <li><a href="Listing.html">Our Stories</a></li>
+          <li><a href="#">News</a></li>
+        </ul>
+      </div>
+      <div class="nav__mega-panel" data-mega-panel="about">
+        <span class="nav__mega-label">About</span>
+        <img class="nav__mega-art" src="assets/images/menu-about.svg" alt="" aria-hidden="true" />
+        <ul class="nav__mega-links">
+          <li><a href="#">Overview</a></li>
+          <li><a href="#">Our Origin</a></li>
+          <li><a href="#">Our Purpose</a></li>
+          <li><a href="#">Values</a></li>
+          <li><a href="#">Peoples</a></li>
+          <li><a href="#">Our Institutes</a></li>
+        </ul>
       </div>
     </div>
 
@@ -60,10 +97,45 @@
 
       <!-- Primary nav — big, left-aligned -->
       <nav class="nav__mobile-links" aria-label="Mobile navigation">
-        <a href="#" class="nav__mobile-link">Work</a>
-        <a href="#" class="nav__mobile-link">Impact</a>
-        <a href="#" class="nav__mobile-link">About</a>
-        <a href="#" class="nav__mobile-link">Connect</a>
+        <div class="nav__mobile-item">
+          <button type="button" class="nav__mobile-link" aria-expanded="false">Work</button>
+          <div class="nav__mobile-sub">
+            <div class="nav__mobile-sub-inner">
+              <a href="#">Overview</a>
+              <a href="#">Approach</a>
+              <a href="#">Our Priorities</a>
+              <a href="#">Our Initiatives</a>
+              <a href="#">Partnership</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav__mobile-item">
+          <button type="button" class="nav__mobile-link" aria-expanded="false">Impact</button>
+          <div class="nav__mobile-sub">
+            <div class="nav__mobile-sub-inner">
+              <a href="#">Overview</a>
+              <a href="#">Learning</a>
+              <a href="Listing.html">Our Stories</a>
+              <a href="#">News</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav__mobile-item">
+          <button type="button" class="nav__mobile-link" aria-expanded="false">About</button>
+          <div class="nav__mobile-sub">
+            <div class="nav__mobile-sub-inner">
+              <a href="#">Overview</a>
+              <a href="#">Our Origin</a>
+              <a href="#">Our Purpose</a>
+              <a href="#">Values</a>
+              <a href="#">Peoples</a>
+              <a href="#">Our Institutes</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav__mobile-item">
+          <a href="#" class="nav__mobile-link">Connect</a>
+        </div>
       </nav>
 
       <!-- Secondary links from the footer, two columns -->
@@ -116,15 +188,28 @@
       <nav class="listing__crumb" aria-label="Breadcrumb">
         <a href="index.html">Home</a>
         <span class="listing__crumb-sep">/</span>
-        <div class="listing__crumb-drop" data-dropdown>
-          <button class="listing__crumb-toggle" type="button" aria-expanded="false">
+        <div class="listing__crumb-drop">
+          <a href="#" class="listing__crumb-toggle">
             Impact
             <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          </a>
           <div class="listing__crumb-menu" role="menu">
-            <a href="#" role="menuitem">Our Stories</a>
-            <a href="#" role="menuitem">News</a>
+            <a href="#" role="menuitem">Work</a>
+            <a href="#" role="menuitem">Impact</a>
+            <a href="#" role="menuitem">About</a>
+            <a href="#" role="menuitem">Connect</a>
+          </div>
+        </div>
+        <span class="listing__crumb-sep">/</span>
+        <div class="listing__crumb-drop">
+          <span class="listing__crumb-toggle" aria-current="page">
+            Our Stories
+            <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div class="listing__crumb-menu" role="menu">
             <a href="#" role="menuitem">Learning</a>
+            <a href="Listing.html" role="menuitem" aria-current="page">Our Stories</a>
+            <a href="#" role="menuitem">News</a>
           </div>
         </div>
         <span class="listing__crumb-sep">/</span>
@@ -385,6 +470,31 @@
     </div>
 
   </footer>
+
+  <!-- Full-screen search overlay (opened from the nav search icon) -->
+  <div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
+    <div class="search-overlay__bar">
+      <a href="index.html" class="search-overlay__logo" aria-label="D. H. Chen Foundation home">
+        <img src="assets/icons/logo-nav.png" alt="D. H. Chen Foundation" />
+      </a>
+      <button class="search-overlay__close" type="button" aria-label="Close search">
+        <span></span><span></span>
+      </button>
+    </div>
+    <div class="search-overlay__inner">
+      <form class="search-overlay__field" role="search" action="#">
+        <img class="search-overlay__icon" src="assets/icons/icon-search.svg" alt="" aria-hidden="true" />
+        <input class="search-overlay__input" type="search" placeholder="Looking for..." aria-label="Search" />
+      </form>
+      <p class="search-overlay__label">Whats hot</p>
+      <nav class="search-overlay__hot" aria-label="Popular searches">
+        <a href="#">Scholarship</a>
+        <a href="#">Funding for innovative</a>
+        <a href="#">Join us</a>
+        <a href="#">Events</a>
+      </nav>
+    </div>
+  </div>
 
   <!-- Custom cursor (desktop pointers only; script enables it) -->
   <div class="cursor" id="cursor" aria-hidden="true">

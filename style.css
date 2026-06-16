@@ -29,6 +29,11 @@
 
   /* Transitions */
   --ease: 0.25s ease;
+
+  /* Logo height — fluid so it scales down (keeping aspect; never squeezed
+     horizontally) as the bar runs out of room. ~216px wide at 74px.
+     Shared by the nav and the search overlay so they always match. */
+  --logo-h: clamp(42px, 4.8vw, 74px);
 }
 
 
@@ -195,7 +200,11 @@ ul   { list-style: none; }
 body.has-custom-cursor,
 body.has-custom-cursor a,
 body.has-custom-cursor button,
-body.has-custom-cursor .news__carousel-wrap { cursor: none; }
+body.has-custom-cursor .news__carousel-wrap,
+body.has-custom-cursor .news-card,
+body.has-custom-cursor .news-card__tag,
+body.has-custom-cursor .story-card,
+body.has-custom-cursor .story-card__tag { cursor: none; }
 
 .cursor {
   position: fixed;
@@ -216,8 +225,9 @@ body.has-custom-cursor .news__carousel-wrap { cursor: none; }
               background-color 0.1s ease, border-color 0.1s ease;
 }
 body.has-custom-cursor .cursor { display: flex; }
-/* full-screen orange menu open → the orange ring would vanish, so go white */
-body.menu-open .cursor { border-color: var(--c-white); }
+/* white mobile menu keeps the base orange ring; only the orange search
+   overlay needs a white ring so it doesn't vanish */
+body.search-open .cursor { border-color: var(--c-white); }
 
 .cursor__label {
   position: absolute;
@@ -348,7 +358,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   display: grid;
   grid-template-columns: 1fr auto 1fr;  /* logo | MENU centred | actions */
   align-items: center;
-  height: 74px;
+  height: 104px;                        /* 74px logo + 15px gap top & bottom */
   padding: 0 var(--gm);
   max-width: 1920px;
   margin: 0 auto;
@@ -357,7 +367,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 
 /* Logo — left column of grid */
 .nav__logo { display: flex; align-items: center; }
-.nav__logo-img { height: 52px; width: auto; display: block; transition: height var(--ease); }
+.nav__logo-img { height: var(--logo-h); width: auto; display: block; transition: height var(--ease); }  /* ≈216px wide at 74px */
 
 /* Desktop menu — centre column of the 3-col grid */
 .nav__menu {
@@ -406,14 +416,14 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  /* the 22px glyph centred in the 40px tap target leaves a 9px gap to the
+  /* the 29px glyph centred in the 40px tap target leaves a 5.5px gap to the
      button edge — nudge right so the icon itself sits flush on the col-6
      margin line (reset on mobile, where the hamburger is the last item) */
-  margin-right: -9px;
+  margin-right: -5.5px;
 }
 .nav__search-btn img {
-  width: 22px;
-  height: 22px;       /* force exact square — search viewBox is 29×29 */
+  width: 29px;
+  height: 29px;       /* force exact square — search viewBox is 29×29 */
   display: block;
   object-fit: contain;
   flex-shrink: 0;
@@ -444,8 +454,8 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   position: fixed;
   inset: 0;
   z-index: 200;                 /* above the fixed nav (100) */
-  background: var(--c-orange);
-  color: var(--c-white);
+  background: var(--c-white);
+  color: var(--c-black);
   flex-direction: column;
   padding: 0 var(--gm-mob) calc(env(safe-area-inset-bottom) + 28px);
   overflow-y: auto;
@@ -465,7 +475,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   font-family: var(--f-sans);
   font-size: 16px;
   font-weight: 400;
-  color: var(--c-white);
+  color: var(--c-black);
 }
 .nav__mobile-bar-actions { display: flex; align-items: center; gap: 14px; }
 .nav__mobile-search {
@@ -474,7 +484,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 }
 .nav__mobile-search img {
   width: 21px; height: 21px; object-fit: contain;
-  filter: brightness(0) invert(1);   /* black icon → white */
+  filter: brightness(0);             /* icon → black */
 }
 /* X close — two crossed bars */
 .nav__mobile-close {
@@ -485,26 +495,81 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .nav__mobile-close span {
   position: absolute;
   left: 50%; top: 50%;
-  width: 24px; height: 2px;
-  background: var(--c-white);
+  width: 22px; height: 1.5px;     /* same X as the search overlay close */
+  background: var(--c-black);
 }
 .nav__mobile-close span:first-child { transform: translate(-50%, -50%) rotate(45deg); }
 .nav__mobile-close span:last-child  { transform: translate(-50%, -50%) rotate(-45deg); }
 
-/* Primary links — big, left-aligned */
+/* Primary links — big, left-aligned, orange */
 .nav__mobile-links {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 6px;
   margin-top: 24px;
+}
+.nav__mobile-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 .nav__mobile-link {
   font-family: var(--f-serif);
   font-size: 44px;
   font-weight: 400;
   line-height: 1.25;
-  color: var(--c-white);
+  color: var(--c-orange);
+  /* underline draws in left→right on hover (replaces the cursor-frame affordance) */
+  padding-bottom: 2px;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0% 1.5px;
+  transition: background-size 0.35s ease;
+}
+.nav__mobile-link:hover { background-size: 100% 1.5px; }
+/* section toggles are buttons — strip the native chrome (keep the underline bg) */
+button.nav__mobile-link {
+  border: none;
+  padding: 0 0 2px;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* 2nd-level panel — fully hidden until the section is tapped (display:none, so
+   no peek is possible), then the links pop in one after another (first → last). */
+.nav__mobile-sub { display: none; }
+.nav__mobile-item.is-open .nav__mobile-sub { display: block; }
+.nav__mobile-sub-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0 18px 4px;
+}
+.nav__mobile-sub a {
+  font-family: var(--f-sans);
+  font-size: 18px;
+  color: var(--c-black);
+  /* underline draws in on hover (no cursor frame, no colour fade) */
+  padding-bottom: 2px;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0% 1px;
+  transition: background-size 0.3s ease;
+}
+.nav__mobile-sub a:hover { background-size: 100% 1px; }
+/* stagger each link in as the panel opens */
+.nav__mobile-item.is-open .nav__mobile-sub a {
+  animation: navSubIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.nav__mobile-item.is-open .nav__mobile-sub a:nth-child(1) { animation-delay: 0s; }
+.nav__mobile-item.is-open .nav__mobile-sub a:nth-child(2) { animation-delay: 0.06s; }
+.nav__mobile-item.is-open .nav__mobile-sub a:nth-child(3) { animation-delay: 0.12s; }
+.nav__mobile-item.is-open .nav__mobile-sub a:nth-child(4) { animation-delay: 0.18s; }
+.nav__mobile-item.is-open .nav__mobile-sub a:nth-child(5) { animation-delay: 0.24s; }
+.nav__mobile-item.is-open .nav__mobile-sub a:nth-child(6) { animation-delay: 0.30s; }
+@keyframes navSubIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Secondary links from the footer — two columns */
@@ -525,7 +590,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   font-family: var(--f-sans);
   font-size: 16px;
   font-weight: 400;
-  color: var(--c-white);
+  color: var(--c-black);
 }
 
 .nav__mobile-social {
@@ -535,7 +600,131 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 }
 .nav__mobile-social-link img {
   width: 26px; height: 26px; object-fit: contain;
-  filter: brightness(0) invert(1);   /* black icon → white */
+  filter: brightness(0);             /* icon → black */
+}
+
+
+/* ================================================================
+   SEARCH OVERLAY — full-screen orange search (Figma "Desktop_Search")
+   Opened from the desktop search button or the mobile menu's search.
+   ================================================================ */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;                 /* above nav (100) and mobile menu (200) */
+  background: var(--c-orange);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.32s ease, visibility 0s linear 0.32s;
+}
+.search-overlay--open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.32s ease;
+}
+/* top bar mirrors .nav__inner exactly, so the logo lines up with the nav logo
+   and the close sits on the same right-hand grid margin */
+.search-overlay__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 104px;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 0 var(--gm);
+}
+.search-overlay__logo { display: block; }
+.search-overlay__logo img {
+  height: var(--logo-h); width: auto; display: block;   /* matches the nav logo */
+  filter: brightness(0) invert(1);                      /* logo → white */
+}
+.search-overlay__close {
+  position: relative;
+  width: 63px; height: 63px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  transition: background var(--ease);
+}
+.search-overlay__close:hover { background: var(--c-white); border-color: var(--c-white); }
+.search-overlay__close:hover span { background: var(--c-orange); }
+.search-overlay__close span {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 22px; height: 1.5px;
+  background: var(--c-white);
+}
+.search-overlay__close span:first-child { transform: translate(-50%, -50%) rotate(45deg); }
+.search-overlay__close span:last-child  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.search-overlay__inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(816px, calc(100vw - 2 * var(--gm)));
+}
+.search-overlay__field {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  padding-bottom: 14px;
+}
+.search-overlay__icon {
+  width: 29px; height: 29px;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);             /* icon → white */
+}
+.search-overlay__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  outline: none;
+  font-family: var(--f-serif);
+  font-size: 40px;
+  font-weight: 400;
+  color: var(--c-white);
+}
+.search-overlay__input::placeholder { color: var(--c-white); opacity: 1; }
+.search-overlay__label {
+  margin-top: 26px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--c-white);
+  opacity: 0.4;
+}
+.search-overlay__hot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 34px;
+  margin-top: 12px;
+}
+.search-overlay__hot a {
+  font-family: var(--f-sans);
+  font-size: 20px;
+  color: var(--c-white);
+  /* underline that draws in from left to right on hover (no fade) */
+  padding-bottom: 4px;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0% 1px;
+  transition: background-size 0.35s ease;
+}
+.search-overlay__hot a:hover { background-size: 100% 1px; }
+
+@media (max-width: 700px) {
+  .search-overlay__bar { height: 78px; padding: 0 var(--gm-mob); }   /* matches mobile nav */
+  .search-overlay__close { width: 40px; height: 40px; border: none; }   /* mobile: just the X, no ring */
+  .search-overlay__close:hover { background: none; }                    /* keep the X-only look */
+  .search-overlay__close:hover span { background: var(--c-white); }
+  .search-overlay__field { gap: 12px; }
+  .search-overlay__icon { width: 24px; height: 24px; }
+  .search-overlay__input { font-size: 28px; }
+  .search-overlay__hot { gap: 12px 24px; }
+  .search-overlay__hot a { font-size: 17px; }
 }
 
 
@@ -1330,6 +1519,12 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   transition: transform 0.6s ease;
 }
 .news-card:hover .news-card__image img { transform: scale(1.06); }
+/* hover the card → title + description turn orange (card is clickable) */
+.news-card { cursor: pointer; }
+.news-card__title,
+.news-card__description { transition: color var(--ease); }
+.news-card:hover .news-card__title,
+.news-card:hover .news-card__description { color: var(--c-orange); }
 
 .news-card__body {
   flex: 1;
@@ -1357,9 +1552,31 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   font-family: var(--f-sans);
   font-size: 16px;
   font-weight: 400;
-  color: var(--c-black);
+  color: var(--c-orange);
   margin-top: auto;
 }
+/* tag pills (same look as the inner-page story cards) */
+.news-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.news-card__tag {
+  background: #fff4ec;
+  border-radius: 100px;
+  padding: 5px 15px;
+  font-family: var(--f-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--c-black);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease);
+}
+.news-card__tag:hover { background: var(--c-orange); color: var(--c-white); }
+/* show at most two tags on the homepage news cards */
+.news-card__tags li:nth-child(n+3) { display: none; }
 
 .news__cta { display: flex; justify-content: center; margin-top: 12px; }
 
@@ -1829,17 +2046,30 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   /* native scroll-snap centres cards smoothly on touch — replaces the JS
      snap-back that felt like a catch/stutter after releasing a drag */
   .news__carousel-wrap { scroll-snap-type: x mandatory; }
+  /* Mobile: match the inner-page story card — padded white card with the
+     text on top and the image pinned to the bottom (Figma mobile). */
   .news-card {
     height: auto;
     flex-direction: column;
+    padding: 30px 27px;
     scroll-snap-align: center;
   }
   /* Figma mobile: no tilt — JS skips the wheel transform under 768px */
-  .news-card__image { width: 100%; height: 275px; }
-  .news-card__body  { padding: 19px 24px 24px; }
-  .news-card__title { font-size: 18px; }
-  .news-card__description { font-size: 14px; line-height: 22px; margin-top: 6px; }
-  .news-card__category { font-size: 14px; margin-top: 28px; }
+  .news-card__image {
+    order: 2;                      /* image drops to the bottom of the card */
+    width: 100%;
+    height: auto;
+    aspect-ratio: 306 / 187;
+    margin-top: 20px;
+  }
+  /* body grows to fill the (equal-height) card so the category + tags sink to
+     the bottom, lining up with the image across every card in the row */
+  .news-card__body  { order: 1; padding: 0; flex: 1; }
+  .news-card__title { font-size: 22px; line-height: 28px; }
+  .news-card__description { font-size: 15px; line-height: 22px; margin-top: 12px; flex: none; }
+  .news-card__category { font-size: 12px; margin-top: auto; padding-top: 18px; }
+  .news-card__tags { margin-top: 12px; }
+  .news-card__tag { font-size: 11px; padding: 4px 13px; }
 
   /* Buttons scale down slightly (Figma mobile) */
   .btn-circle { font-size: 12px; }
@@ -2004,6 +2234,19 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   text-align: left;
 }
 .listing__crumb-drop.is-open .listing__crumb-menu { display: block; }
+/* breadcrumb: open on HOVER (the toggle itself is a link that navigates on
+   click). A transparent bridge fills the gap so moving from the toggle down
+   into the menu doesn't drop the hover. */
+.listing__crumb-drop:hover .listing__crumb-menu,
+.listing__crumb-drop:focus-within .listing__crumb-menu { display: block; }
+.listing__crumb-menu::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -12px;
+  height: 12px;
+}
 
 /* title */
 .listing__title {
@@ -2057,7 +2300,9 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .listing__crumb-toggle:focus-visible { outline: none; }
 .listing__chev { width: 12px; height: 8px; flex-shrink: 0; color: currentColor; transition: transform var(--ease); }
 .listing__filter.is-open .listing__chev,
-.listing__crumb-drop.is-open .listing__chev { transform: rotate(180deg); }
+.listing__crumb-drop.is-open .listing__chev,
+.listing__crumb-drop:hover .listing__chev,
+.listing__crumb-drop:focus-within .listing__chev { transform: rotate(180deg); }
 
 /* dropdown menus (filter + breadcrumb share the look) */
 .listing__filter-menu {
@@ -2566,7 +2811,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 .article__video:hover .article__play::before { border-left-color: var(--c-white); }
 
 /* related-project pills */
-.article__btn-row { display: flex; flex-wrap: wrap; gap: 44px; margin-top: 32px; }
+.article__btn-row { display: flex; flex-wrap: wrap; gap: 44px; margin-top: 16px; }
 .article__pill {
   display: inline-flex;
   align-items: center;
@@ -2617,7 +2862,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 16px;
   font-family: var(--f-sans);
   font-size: 15px;
   color: var(--c-black);
@@ -2798,3 +3043,95 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   .article__related-item { grid-template-columns: minmax(0, 1fr); }
   .article__related-thumb { display: none; }
 }
+
+
+/* ================================================================
+   NAV — desktop mega menu (hover-opened)
+   Centred white panel below the nav: link list (left) + line-art
+   illustration (bottom-right), matching the Figma "Menu" frames.
+   ================================================================ */
+.nav__mega {
+  position: absolute;
+  top: 104px;                /* just below the 104px nav bar */
+  left: 50%;
+  width: min(819px, calc(100vw - 60px));
+  transform: translateX(-50%) translateY(-10px);
+  z-index: 90;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
+}
+.nav--scrolled .nav__mega { top: 60px; }   /* follows the shrunk nav */
+.nav--mega-open .nav__mega {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+/* panel matches the Figma frame: 819 × 396. Label, illustration and links
+   are all absolutely placed per the design, so the panel needs no padding. */
+.nav__mega-panel {
+  position: relative;
+  min-height: 396px;
+  background: var(--c-white);
+  box-shadow: 0 26px 54px rgba(0, 0, 0, 0.08);
+  overflow: hidden;          /* clip the illustration to the panel */
+  display: none;
+}
+.nav__mega-panel.is-active { display: block; }
+
+/* small orange section label, top-left */
+.nav__mega-label {
+  position: absolute;
+  top: 36px;
+  left: 50px;
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-orange);
+}
+
+/* link list — right side of the panel */
+.nav__mega-links {
+  list-style: none;
+  position: absolute;
+  top: 26px;
+  left: 590px;
+  z-index: 1;
+}
+.nav__mega-links a {
+  display: inline-block;
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 40px;
+  color: var(--c-black);
+  transition: color var(--ease);
+}
+.nav__mega-links a:hover { color: var(--c-orange); }
+
+/* illustration — left side, positioned per the Figma layout for each section */
+.nav__mega-art { position: absolute; width: auto; height: auto; pointer-events: none; }
+.nav__mega-panel[data-mega-panel="work"]   .nav__mega-art { width: 541px; left: 35px; bottom: 0; }
+.nav__mega-panel[data-mega-panel="impact"] .nav__mega-art { width: 584px; left: 0;    top: 102px; }
+.nav__mega-panel[data-mega-panel="about"]  .nav__mega-art { width: 442px; left: 0;    top: 85px; }
+
+/* draw-in animation for the inlined illustration (same timing as the pillars):
+   each shape traces its outline, the fill inks in while the line is still down,
+   then the tracing stroke drops — an overlapping handoff with no dead pause */
+.nav__mega-art path {
+  transition: stroke-dashoffset 1.6s ease,
+              fill-opacity 0.9s ease 1.3s,
+              stroke-opacity 0.6s ease 2.1s;
+}
+
+/* the hovered section stays orange while its panel is open */
+.nav__link--mega-active { color: var(--c-orange); }
+
+/* hover-menu is desktop-only; small screens use the hamburger overlay */
+@media (max-width: 900px) { .nav__mega { display: none; } }
