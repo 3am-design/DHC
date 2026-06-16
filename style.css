@@ -2285,3 +2285,516 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 @media (max-width: 600px) {
   .listing__grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
+
+
+/* ================================================================
+   INNER PAGE — ARTICLE (story detail, e.g. "Project Fuel")
+   Centred header (breadcrumb · title · subtitle · tags) above a
+   two-column body: rich article (left) + Related Articles (right).
+   Reuses the listing breadcrumb component + footer fade.
+   ================================================================ */
+.article {
+  position: relative;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 140px var(--gm) 120px;
+}
+
+/* background decor — soft orange/white glows (same PNGs as listing) */
+.article__decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.article__blur { position: absolute; max-width: none; pointer-events: none; }
+.article__blur--a { width: 1100px; right: -280px; top: -360px; opacity: 0.8; }    /* orange, top-right */
+.article__blur--b { width: 1600px; left: 50%; transform: translateX(-50%); top: 4%; opacity: 0.7; }  /* white wash, upper */
+.article__blur--c { width: 1000px; left: -320px; top: 52%; opacity: 0.5; }        /* orange, lower-left */
+.article__blur--d { width: 1500px; right: -380px; top: 60%; opacity: 0.6; }       /* white wash, lower-right */
+
+/* ── header ──────────────────────────────────────────────────── */
+.article__head {
+  max-width: 900px;
+  margin: 0 auto 72px;
+  text-align: center;
+}
+.article__crumb { margin-bottom: 36px; }
+
+.article__title {
+  font-family: var(--f-serif);
+  font-size: 70px;
+  font-weight: 400;
+  line-height: 1.08;
+  color: var(--c-black);
+}
+.article__subtitle {
+  font-family: var(--f-sans);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--c-orange);
+  margin-top: 16px;
+}
+.article__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+.article__tags li { display: flex; }
+.article__tag {
+  background: var(--c-white);
+  border-radius: 100px;
+  padding: 7px 20px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--c-black);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease);
+}
+.article__tag:hover { background: var(--c-orange); color: var(--c-white); }
+/* mouse uses the custom cursor for affordance (no extra outline); keep a ring
+   for keyboard users only */
+.article__tag:focus { outline: none; }
+.article__tag:focus-visible { outline: 2px solid var(--c-orange); outline-offset: 2px; }
+
+/* ── body grid ───────────────────────────────────────────────────
+   Follows the Figma page grid (12 columns, 40px gutter) rather than a
+   symmetric centred block: the article body starts at column 3 (a wide
+   left indent under the centred title) and the related rail sits on the
+   right columns. At 1920 this lands the main column at x=360 / 890 wide
+   and the related rail at x=1290, exactly as designed.                 */
+.article__body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gg);
+  max-width: 1820px;
+  margin: 0 auto;
+}
+.article__main {
+  grid-column: 3 / 9;          /* cols 3–8 → 890px wide, indented from the left */
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* section title row + share button.
+   The share is absolutely positioned (not a flex sibling) so its rendering
+   never depends on flex/native-button quirks — this is what makes it show
+   reliably in Safari as well as Chrome. */
+.article__main-head {
+  position: relative;
+}
+.article__section-title {
+  font-family: var(--f-serif);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 40px;
+  color: var(--c-black);
+  padding-right: 64px;          /* leave room for the share button */
+}
+.article__send {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-white);
+  border: none;
+  border-radius: 50%;
+  color: var(--c-black);
+  cursor: pointer;
+  /* reset Safari's native button chrome so the circle + glyph render */
+  -webkit-appearance: none;
+  appearance: none;
+  transition: color var(--ease), transform var(--ease);
+}
+.article__send svg { width: 20px; height: 20px; display: block; }
+.article__send:hover { transform: translateY(-1px); background: var(--c-orange); color: var(--c-white); }
+.article__send--copied::after {
+  content: 'Link copied';
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--f-sans);
+  font-size: 12px;
+  color: var(--c-white);
+  background: var(--c-black);
+  padding: 5px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.article__text {
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--c-black);
+  margin-top: 24px;
+}
+
+/* image carousel */
+.article__figure { margin: 40px 0 0; }
+.article__figure-media {
+  aspect-ratio: 890 / 462;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.05);
+}
+.article__figure-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.article__figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-top: 16px;
+}
+.article__caption {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--c-black);
+}
+.article__carousel-nav { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.article__carousel-count {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  color: var(--c-black);
+  min-width: 34px;
+  text-align: center;
+}
+.article__carousel-bar { color: #c7c7c7; margin: 0 7px; }
+.article__carousel-arrow {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-black);
+  transition: transform var(--ease), color var(--ease);
+}
+.article__carousel-arrow svg { width: 20px; height: 12px; display: block; }
+.article__carousel-arrow:hover { color: var(--c-orange); }
+.article__carousel-arrow--prev:hover { transform: translateX(-2px); }
+.article__carousel-arrow--next:hover { transform: translateX(2px); }
+
+/* pull quote */
+.article__quote {
+  position: relative;
+  margin: 60px 0;
+  padding-right: 100px;
+}
+.article__quote p {
+  font-family: var(--f-serif);
+  font-size: 50px;
+  font-weight: 400;
+  line-height: 60px;
+  color: var(--c-orange);
+}
+.article__quote-mark {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  width: 105px;
+  height: 95px;
+  transform: rotate(180deg);   /* source glyph is an opening quote; design uses closing */
+  pointer-events: none;
+}
+
+/* two images side by side (square corners) */
+.article__duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 40px;
+}
+.article__duo-media {
+  aspect-ratio: 430 / 272;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.05);
+}
+.article__duo-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* video (square corners) */
+.article__video {
+  position: relative;
+  margin-top: 40px;
+  overflow: hidden;
+  aspect-ratio: 890 / 462;
+  background: rgba(0, 0, 0, 0.05);
+}
+.article__video img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* play button — same as the homepage intro video (CSS triangle in a white
+   circle; flips to orange fill + white triangle on hover / video hover) */
+.article__play {
+  position: absolute;
+  left: 30px;
+  bottom: 30px;
+  width: 83px;
+  height: 83px;
+  border-radius: 50%;
+  background: var(--c-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--ease);
+}
+.article__play::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-left: 16px solid var(--c-orange);
+  border-top-width: 9.6px;
+  border-bottom-width: 9.6px;
+  margin-left: 5.6px;
+  transition: border-left-color var(--ease);
+}
+.article__play:hover,
+.article__video:hover .article__play { background: var(--c-orange); }
+.article__play:hover::before,
+.article__video:hover .article__play::before { border-left-color: var(--c-white); }
+
+/* related-project pills */
+.article__btn-row { display: flex; flex-wrap: wrap; gap: 44px; margin-top: 32px; }
+.article__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--f-sans);
+  font-size: 15px;
+  color: var(--c-black);
+  transition: color var(--ease);
+}
+.article__pill-circle {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--c-orange);
+  color: var(--c-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--ease), color var(--ease);
+}
+.article__pill-circle svg { width: 15px; height: 8px; }
+.article__pill:hover { color: var(--c-orange); }
+.article__pill:hover .article__pill-circle { background: var(--c-orange); color: var(--c-white); }
+
+/* orange highlight box (square corners) */
+.article__highlight {
+  background: var(--c-orange);
+  color: var(--c-white);
+  padding: 48px 56px 52px;
+  margin: 50px 0;
+}
+.article__highlight-icon {
+  display: block;
+  width: 41px;
+  height: 41px;
+}
+.article__highlight p {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 30px;
+  margin-top: 26px;
+}
+
+/* download button */
+.article__download {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  font-family: var(--f-sans);
+  font-size: 15px;
+  color: var(--c-black);
+  transition: color var(--ease);
+}
+.article__download-circle {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--c-orange);
+  color: var(--c-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--ease), color var(--ease);
+}
+.article__download-circle svg { width: 15px; height: 15px; display: block; }
+.article__download:hover { color: var(--c-orange); }
+.article__download:hover .article__download-circle { background: var(--c-orange); color: var(--c-white); }
+
+/* testimonial card (white, square corners) */
+.article__testimonial {
+  position: relative;
+  background: var(--c-white);
+  padding: 45px 60px 50px;
+  margin-top: 48px;
+}
+.article__testimonial-avatar {
+  width: 91px;
+  height: 91px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.05);
+}
+.article__testimonial-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.article__testimonial-mark {
+  position: absolute;
+  top: 44px;
+  right: 56px;
+  width: 43px;
+  height: 39px;
+  transform: rotate(180deg);   /* match design: closing quote */
+  pointer-events: none;
+}
+.article__testimonial-quote {
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 30px;
+  color: var(--c-black);
+  margin-top: 36px;
+}
+.article__testimonial-author { display: block; margin-top: 28px; }
+.article__testimonial-name {
+  display: block;
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--c-black);
+}
+.article__testimonial-role {
+  display: block;
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 4px;
+}
+
+/* ── related sidebar ─────────────────────────────────────────────
+   After scroll, the sidebar sticks and sits vertically centred on
+   the right of the viewport (top:50% + translateY(-50%)). It only
+   centres while it fits; on stacked layouts the sticky is removed.   */
+.article__related {
+  grid-column: 9 / 13;           /* right columns */
+  max-width: 495px;              /* design rail width — keeps the right gutter */
+  position: relative;            /* column stretches to the full body-grid height */
+}
+/* The rail starts aligned to the top of the content tile (in normal flow),
+   then sticks to the top of the viewport once the page scrolls past it, and
+   releases again at the bottom of the article column. The light-orange divider
+   lives on this inner wrapper so it is only as tall as the list (it stops at
+   the bottom of the last related item, not the full article height). */
+.article__related-inner {
+  position: sticky;
+  top: 110px;
+  padding-left: 40px;
+  border-left: 1px solid #FFCCA9;   /* light-orange divider */
+}
+.article__related-title {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--c-black);
+  margin-bottom: 20px;
+}
+.article__related-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  padding: 22px 0;
+  border-top: 1px solid #FFCCA9;
+}
+.article__related-item:first-of-type { border-top: 0; padding-top: 4px; }
+.article__related-name {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--c-black);
+  transition: color var(--ease);
+}
+.article__related-desc {
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--c-black);
+  margin-top: 8px;
+}
+.article__related-thumb {
+  width: 129px;
+  height: 87px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.05);
+}
+.article__related-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.article__related-item:hover .article__related-name { color: var(--c-orange); }
+.article__related-item:hover .article__related-thumb img { transform: scale(1.05); }
+
+/* ── Article responsive ──────────────────────────────────────── */
+@media (max-width: 1440px) {
+  /* tighten the big left indent on smaller desktops: main moves to col 2 */
+  .article__main { grid-column: 2 / 9; }
+  .article__related { grid-column: 9 / 13; }
+}
+@media (max-width: 1024px) {
+  .article__title { font-size: 56px; }
+  /* sidebar drops below the article and spans full width — drop the grid + sticky */
+  .article__body { grid-template-columns: minmax(0, 1fr); gap: 64px; max-width: 900px; }
+  .article__main { grid-column: auto; }
+  .article__related {
+    grid-column: auto;
+    max-width: none;
+    border-top: 1px solid #FFCCA9;
+    padding-top: 36px;
+  }
+  .article__related-inner { position: static; padding-left: 0; border-left: 0; }
+}
+@media (max-width: 767px) {
+  .article { padding: 104px var(--gm-mob) 120px; }
+  .article__head { margin-bottom: 48px; }
+  .article__crumb { margin-bottom: 24px; }
+  .article__title { font-size: 38px; }
+  .article__section-title { font-size: 30px; }
+  .article__quote { padding-right: 50px; margin: 44px 0; }
+  .article__quote p { font-size: 27px; }
+  .article__quote-mark { font-size: 90px; top: 20px; }
+  .article__duo { grid-template-columns: 1fr; gap: 16px; }
+  .article__highlight { padding: 34px 28px 38px; }
+  .article__highlight p { font-size: 16px; }
+  .article__testimonial { padding: 34px 28px 38px; }
+  .article__btn-row { gap: 16px 28px; }
+  .article__play { width: 62px; height: 62px; left: 18px; bottom: 18px; }
+  .article__play::before {
+    border-left-width: 12px;
+    border-top-width: 7.2px;
+    border-bottom-width: 7.2px;
+    margin-left: 4px;
+  }
+  /* related items: keep thumb but allow stack on very small screens */
+  .article__related-thumb { width: 104px; height: 70px; }
+}
+@media (max-width: 430px) {
+  .article__related-item { grid-template-columns: minmax(0, 1fr); }
+  .article__related-thumb { display: none; }
+}

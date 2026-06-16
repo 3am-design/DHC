@@ -692,14 +692,19 @@
     const r = el.getBoundingClientRect();
     const w = r.width / zoom, h = r.height / zoom;
     cursor.classList.add('cursor--magnet');
-    if (Math.abs(w - h) < 12) {
+    /* hug the target tightly — ~2px gap (the ring is border-box with a 2.5px
+       border, so +9 on each dimension leaves about 2px of clearance).
+       Plain-text nav links have no padded box of their own, so give them a
+       roomier wrap instead of hugging the glyphs. */
+    const navLink = el.matches && el.matches('.nav__link, .nav__lang');
+    if (!navLink && Math.abs(w - h) < 12) {
       /* near-square targets (e.g. the search icon) get a perfect circle */
-      const s = Math.round(Math.max(w, h) + 18);
+      const s = Math.round(Math.max(w, h) + 9);
       cursor.style.width  = s + 'px';
       cursor.style.height = s + 'px';
     } else {
-      cursor.style.width  = Math.round(w + 24) + 'px';
-      cursor.style.height = Math.round(h + 18) + 'px';
+      cursor.style.width  = Math.round(w + (navLink ? 24 : 9)) + 'px';
+      cursor.style.height = Math.round(h + (navLink ? 16 : 9)) + 'px';
     }
   }
   function release() {
@@ -1153,4 +1158,38 @@
 
   document.addEventListener('click', function () { closeAll(null); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(null); });
+})();
+
+
+/* ----------------------------------------------------------------
+   11. Share — OS-native share sheet via the Web Share API, with a
+   clipboard fallback for browsers without navigator.share (most
+   desktops). (No-op on pages without a [data-send-title] button.)
+   ---------------------------------------------------------------- */
+(function () {
+  const buttons = Array.prototype.slice.call(document.querySelectorAll('.article__send'));
+  if (!buttons.length) return;
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', async function () {
+      const data = {
+        title: btn.dataset.sendTitle || document.title,
+        text:  btn.dataset.sendText  || '',
+        url:   window.location.href
+      };
+      try {
+        if (navigator.share) {
+          await navigator.share(data);          /* iOS / Android / Safari / Edge: OS sheet */
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(data.url);   /* desktop fallback */
+          btn.classList.add('article__send--copied');
+          setTimeout(function () { btn.classList.remove('article__send--copied'); }, 1600);
+        }
+      } catch (err) {
+        /* user dismissed the share sheet — ignore */
+      }
+    });
+  });
 })();

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Force the iOS Safari status bar / bottom toolbar to a fixed white instead
+       of sampling page content (which flips between peach hero and white nav as
+       you scroll). Keeps top + bottom chrome consistently white. -->
+  <meta name="theme-color" content="#ffffff" />
+  <title>Our Stories — The D. H. Chen Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Fira+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="listing-page">
+
+  <!-- ============================================================
+       00 — NAVIGATION
+       ============================================================ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+
+      <a href="index.html" class="nav__logo" aria-label="D. H. Chen Foundation home">
+        <img src="assets/icons/logo-nav.png" alt="D. H. Chen Foundation" class="nav__logo-img" />
+      </a>
+
+      <nav class="nav__menu" aria-label="Main navigation">
+        <a href="#" class="nav__link">Work</a>
+        <a href="#" class="nav__link nav__link--active">Impact</a>
+        <a href="#" class="nav__link">About</a>
+        <a href="#" class="nav__link">Connect</a>
+      </nav>
+
+      <div class="nav__actions">
+        <a href="#" class="nav__lang">中文</a>
+        <button class="nav__search-btn" aria-label="Search">
+          <img src="assets/icons/icon-search.svg" alt="" />
+        </button>
+        <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <img src="assets/icons/icon-hamburger.svg" alt="" />
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__mobile-menu" id="mobile-menu" aria-hidden="true">
+
+      <!-- Full-screen menu top bar: 中文 (left) · search + close (right) -->
+      <div class="nav__mobile-bar">
+        <a href="#" class="nav__mobile-lang">中文</a>
+        <div class="nav__mobile-bar-actions">
+          <button class="nav__mobile-search" aria-label="Search">
+            <img src="assets/icons/icon-search.svg" alt="" />
+          </button>
+          <button class="nav__mobile-close" aria-label="Close menu">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Primary nav — big, left-aligned -->
+      <nav class="nav__mobile-links" aria-label="Mobile navigation">
+        <a href="#" class="nav__mobile-link">Work</a>
+        <a href="#" class="nav__mobile-link">Impact</a>
+        <a href="#" class="nav__mobile-link">About</a>
+        <a href="#" class="nav__mobile-link">Connect</a>
+      </nav>
+
+      <!-- Secondary links from the footer, two columns -->
+      <div class="nav__mobile-secondary">
+        <nav class="nav__mobile-col" aria-label="Get involved">
+          <a href="#" class="nav__mobile-sublink">Partner with us</a>
+          <a href="#" class="nav__mobile-sublink">Stay connected</a>
+          <a href="#" class="nav__mobile-sublink">Join our team</a>
+        </nav>
+        <nav class="nav__mobile-col" aria-label="Legal">
+          <a href="#" class="nav__mobile-sublink">Privacy Policy</a>
+          <a href="#" class="nav__mobile-sublink">Disclaimer</a>
+          <a href="#" class="nav__mobile-sublink">Sitemap</a>
+          <a href="#" class="nav__mobile-sublink">Accessibility</a>
+        </nav>
+      </div>
+
+      <div class="nav__mobile-social">
+        <a href="#" class="nav__mobile-social-link" aria-label="LinkedIn">
+          <img src="assets/icons/icon-linkedin.svg" alt="LinkedIn" />
+        </a>
+        <a href="#" class="nav__mobile-social-link" aria-label="Instagram">
+          <img src="assets/icons/icon-instagram.svg" alt="Instagram" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         LISTING — Our Stories
+         ============================================================ -->
+    <section class="listing" id="listing">
+
+      <!-- background: soft blur glows (behind everything) -->
+      <div class="listing__decor" aria-hidden="true">
+        <img src="assets/images/blur_04.png" alt="" class="listing__blur listing__blur--a" />
+        <img src="assets/images/blur_01.png" alt="" class="listing__blur listing__blur--b" />
+        <img src="assets/images/blur_04.png" alt="" class="listing__blur listing__blur--c" />
+      </div>
+
+      <!-- faint sweeping line — overlaid above the card grid (pointer-events:none)
+           so it stays visible across the page; draws itself in on scroll -->
+      <svg class="listing__line" preserveAspectRatio="none" viewBox="0 0 2562.84 1549.08" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path id="listing-line-path" d="M2562.39 76.1449C2546.39 68.1449 1160.39 -135.855 858.393 164.145C556.393 464.145 1269.59 449.758 2408.39 880.145C2858.03 1050.08 1836.03 1456.08 1251.39 1238.14C666.757 1020.21 1052.39 1262.14 1137.39 1304.14C1222.39 1346.14 1014.43 1517.68 0.029955 1548.08" stroke="#FF6900" stroke-width="3" stroke-opacity="0.25"/>
+      </svg>
+
+      <!-- breadcrumb + title -->
+      <nav class="listing__crumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="listing__crumb-sep">/</span>
+        <div class="listing__crumb-drop" data-dropdown>
+          <button class="listing__crumb-toggle" type="button" aria-expanded="false">
+            Impact
+            <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="listing__crumb-menu" role="menu">
+            <a href="#" role="menuitem">Our Stories</a>
+            <a href="#" role="menuitem">News</a>
+            <a href="#" role="menuitem">Learning</a>
+          </div>
+        </div>
+        <span class="listing__crumb-sep">/</span>
+      </nav>
+
+      <h1 class="listing__title">Our Stories</h1>
+
+      <!-- filter bar -->
+      <div class="listing__filters">
+
+        <div class="listing__filter" data-dropdown>
+          <button class="listing__filter-toggle" type="button" aria-expanded="false">
+            <span>Focus Area</span>
+            <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="listing__filter-menu" role="menu">
+            <a href="#" role="menuitem">Mindful Living</a>
+            <a href="#" role="menuitem">Wellbeing</a>
+            <a href="#" role="menuitem">Education Excellence</a>
+          </div>
+        </div>
+
+        <div class="listing__filter" data-dropdown>
+          <button class="listing__filter-toggle" type="button" aria-expanded="false">
+            <span>Pillar</span>
+            <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="listing__filter-menu" role="menu">
+            <a href="#" role="menuitem">Issues-focused</a>
+            <a href="#" role="menuitem">Sector-facing</a>
+          </div>
+        </div>
+
+        <div class="listing__filter" data-dropdown>
+          <button class="listing__filter-toggle" type="button" aria-expanded="false">
+            <span>Institute</span>
+            <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="listing__filter-menu" role="menu">
+            <a href="#" role="menuitem">Above &amp; Beyond</a>
+            <a href="#" role="menuitem">Impact Strategy</a>
+            <a href="#" role="menuitem">D'Ventures</a>
+          </div>
+        </div>
+
+        <div class="listing__filter" data-dropdown>
+          <button class="listing__filter-toggle" type="button" aria-expanded="false">
+            <span>Year</span>
+            <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="listing__filter-menu" role="menu">
+            <a href="#" role="menuitem">2026</a>
+            <a href="#" role="menuitem">2025</a>
+            <a href="#" role="menuitem">2024</a>
+          </div>
+        </div>
+
+        <button class="listing__clear" type="button">Clear all</button>
+      </div>
+
+      <!-- card grid -->
+      <div class="listing__grid">
+
+        <article class="story-card">
+          <h3 class="story-card__title">Community Changemaker Fellowship</h3>
+          <p class="story-card__desc">Cultivating Changemakers to Advance Social Inclusion</p>
+          <p class="story-card__category">Above &amp; Beyond Institute</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Issues-focused</li>
+            <li class="story-card__tag">Wellbeing</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-2.png" alt="Community Changemaker Fellowship" /></div>
+        </article>
+
+        <article class="story-card story-card--text">
+          <h3 class="story-card__title">Compassionate Social Good Community</h3>
+          <p class="story-card__desc">Bringing the Social Good Community Closer through shared learning, networks and trust.</p>
+          <p class="story-card__category">Mindful Living</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Issues-focused</li>
+            <li class="story-card__tag">Wellbeing</li>
+          </ul>
+        </article>
+
+        <article class="story-card story-card--logo">
+          <div class="story-card__logo"><img src="assets/images/logo-pfpw.png" alt="Parenting for a Peaceful World" /></div>
+          <h3 class="story-card__title">Parenting for a Peaceful World</h3>
+          <p class="story-card__desc">Bringing Peace Through Parenting in a Self-Sustainable Manner</p>
+          <p class="story-card__category">Education Excellence</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Issues-focused</li>
+            <li class="story-card__tag">Wellbeing</li>
+          </ul>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">PILnet – Legal Health Check Programme</h3>
+          <p class="story-card__desc">Strengthening the Resilience of Local &amp; Diaspora Organisations in Hong Kong</p>
+          <p class="story-card__category">Above and Beyond</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Issues-focused</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-8.png" alt="PILnet – Legal Health Check Programme" /></div>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">The D. H. Chen Foundation Scholarship Programme</h3>
+          <p class="story-card__desc">Investing Today, Impacting Tomorrow</p>
+          <p class="story-card__category">Education Excellence</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Education</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-1.png" alt="Scholarship Programme" /></div>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">Compassionate Children Programme</h3>
+          <p class="story-card__desc">Promoting Compassion-based Values in School-based Curriculum</p>
+          <p class="story-card__category">Mindful Living</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Mindful Living</li>
+            <li class="story-card__tag">Education</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-6.png" alt="Compassionate Children Programme" /></div>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">Future Education in Action 2.0</h3>
+          <p class="story-card__desc">Fostering Values-driven Life Exploration Education Through Cross-sector Collaboration</p>
+          <p class="story-card__category">Education Excellence</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Education</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-3.png" alt="Future Education in Action 2.0" /></div>
+        </article>
+
+        <article class="story-card story-card--logo">
+          <div class="story-card__logo"><img src="assets/images/logo-barts.png" alt="Barts Charity" /></div>
+          <h3 class="story-card__title">Parenting for a Peaceful World</h3>
+          <p class="story-card__desc">Bringing Peace Through Parenting in a Self-Sustainable Manner</p>
+          <p class="story-card__category">Education Excellence</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Issues-focused</li>
+            <li class="story-card__tag">Wellbeing</li>
+          </ul>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">Shadowing the Golden Path</h3>
+          <p class="story-card__desc">Supporting Carers' Wellbeing through Exercise and Self-rediscovery</p>
+          <p class="story-card__category">Wellbeing</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Wellbeing</li>
+            <li class="story-card__tag">Issues-focused</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-7.png" alt="Shadowing the Golden Path" /></div>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">Youth ImpACT Award</h3>
+          <p class="story-card__desc">A Landmark Social Innovation Award for Youth to Promote and Cultivate Compassion</p>
+          <p class="story-card__category">Education Excellence</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Education</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-4.png" alt="Youth ImpACT Award" /></div>
+        </article>
+
+        <article class="story-card">
+          <h3 class="story-card__title">NeuroCare Community Project</h3>
+          <p class="story-card__desc">Transforming Alzheimer&rsquo;s Care Through Accessible Screening and Community Support</p>
+          <p class="story-card__category">Above and Beyond</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Wellbeing</li>
+            <li class="story-card__tag">Issues-focused</li>
+          </ul>
+          <div class="story-card__thumb"><img src="assets/images/news-5.png" alt="NeuroCare Community Project" /></div>
+        </article>
+
+        <article class="story-card story-card--text">
+          <h3 class="story-card__title">PILnet – Legal Health Check Programme</h3>
+          <p class="story-card__desc">Strengthening the Resilience of Local &amp; Diaspora Organisations in Hong Kong through pro-bono legal support.</p>
+          <p class="story-card__category">Above and Beyond</p>
+          <ul class="story-card__tags">
+            <li class="story-card__tag">Capacity Building</li>
+            <li class="story-card__tag">Issues-focused</li>
+          </ul>
+        </article>
+
+      </div>
+
+      <!-- pagination -->
+      <div class="listing__pager">
+        <button class="pager__arrow pager__arrow--prev" type="button" aria-label="Previous page">
+          <img src="assets/icons/icon-arrow.svg" alt="" />
+        </button>
+        <span class="pager__num">1</span>
+        <span class="pager__total">of 3</span>
+        <button class="pager__arrow pager__arrow--next" type="button" aria-label="Next page">
+          <img src="assets/icons/icon-arrow.svg" alt="" />
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ============================================================
+       05 — FOOTER
+       ============================================================ -->
+  <footer class="footer" id="footer">
+
+    <div class="footer__inner">
+
+      <div class="footer__logo">
+        <img src="assets/icons/logo-footer.svg" alt="D. H. Chen Foundation" />
+      </div>
+
+      <div class="footer__col">
+        <nav class="footer__nav" aria-label="Footer navigation">
+          <a href="#" class="footer__nav-link">Partner with us</a>
+          <a href="#" class="footer__nav-link">Stay connected</a>
+          <a href="#" class="footer__nav-link">Join our team</a>
+        </nav>
+
+        <div class="footer__social">
+          <a href="#" class="footer__social-link" aria-label="LinkedIn">
+            <img src="assets/icons/icon-linkedin.svg" alt="LinkedIn" />
+          </a>
+          <a href="#" class="footer__social-link" aria-label="Instagram">
+            <img src="assets/icons/icon-instagram.svg" alt="Instagram" />
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer__legal-nav" aria-label="Legal navigation">
+        <a href="#" class="footer__legal-link">Privacy Policy</a>
+        <a href="#" class="footer__legal-link">Disclaimer</a>
+        <a href="#" class="footer__legal-link">Sitemap</a>
+        <a href="#" class="footer__legal-link">Accessibility</a>
+      </nav>
+
+    </div>
+
+    <div class="footer__copyright">
+      <p>
+        <span class="footer__copy-line">© 2026 The D. H. Chen Foundation. All rights reserved</span><span class="footer__copy-sep">&nbsp;&nbsp;|&nbsp;&nbsp;</span><span class="footer__copy-line"><a href="https://www.assembly.com.hk" class="footer__credit" target="_blank" rel="noopener">Website designed by Assembly</a></span>
+      </p>
+    </div>
+
+  </footer>
+
+  <!-- Custom cursor (desktop pointers only; script enables it) -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor__label">DISCOVER</span>
+    <img class="cursor__arrow" src="assets/icons/icon-arrow.svg" alt="" />
+  </div>
+
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

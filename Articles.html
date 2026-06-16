@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Force the iOS Safari status bar / bottom toolbar to a fixed white instead
+       of sampling page content (which flips between peach hero and white nav as
+       you scroll). Keeps top + bottom chrome consistently white. -->
+  <meta name="theme-color" content="#ffffff" />
+  <title>Project Fuel — The D. H. Chen Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Fira+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="listing-page article-page">
+
+  <!-- ============================================================
+       00 — NAVIGATION
+       ============================================================ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+
+      <a href="index.html" class="nav__logo" aria-label="D. H. Chen Foundation home">
+        <img src="assets/icons/logo-nav.png" alt="D. H. Chen Foundation" class="nav__logo-img" />
+      </a>
+
+      <nav class="nav__menu" aria-label="Main navigation">
+        <a href="#" class="nav__link">Work</a>
+        <a href="#" class="nav__link nav__link--active">Impact</a>
+        <a href="#" class="nav__link">About</a>
+        <a href="#" class="nav__link">Connect</a>
+      </nav>
+
+      <div class="nav__actions">
+        <a href="#" class="nav__lang">中文</a>
+        <button class="nav__search-btn" aria-label="Search">
+          <img src="assets/icons/icon-search.svg" alt="" />
+        </button>
+        <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <img src="assets/icons/icon-hamburger.svg" alt="" />
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__mobile-menu" id="mobile-menu" aria-hidden="true">
+
+      <!-- Full-screen menu top bar: 中文 (left) · search + close (right) -->
+      <div class="nav__mobile-bar">
+        <a href="#" class="nav__mobile-lang">中文</a>
+        <div class="nav__mobile-bar-actions">
+          <button class="nav__mobile-search" aria-label="Search">
+            <img src="assets/icons/icon-search.svg" alt="" />
+          </button>
+          <button class="nav__mobile-close" aria-label="Close menu">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Primary nav — big, left-aligned -->
+      <nav class="nav__mobile-links" aria-label="Mobile navigation">
+        <a href="#" class="nav__mobile-link">Work</a>
+        <a href="#" class="nav__mobile-link">Impact</a>
+        <a href="#" class="nav__mobile-link">About</a>
+        <a href="#" class="nav__mobile-link">Connect</a>
+      </nav>
+
+      <!-- Secondary links from the footer, two columns -->
+      <div class="nav__mobile-secondary">
+        <nav class="nav__mobile-col" aria-label="Get involved">
+          <a href="#" class="nav__mobile-sublink">Partner with us</a>
+          <a href="#" class="nav__mobile-sublink">Stay connected</a>
+          <a href="#" class="nav__mobile-sublink">Join our team</a>
+        </nav>
+        <nav class="nav__mobile-col" aria-label="Legal">
+          <a href="#" class="nav__mobile-sublink">Privacy Policy</a>
+          <a href="#" class="nav__mobile-sublink">Disclaimer</a>
+          <a href="#" class="nav__mobile-sublink">Sitemap</a>
+          <a href="#" class="nav__mobile-sublink">Accessibility</a>
+        </nav>
+      </div>
+
+      <div class="nav__mobile-social">
+        <a href="#" class="nav__mobile-social-link" aria-label="LinkedIn">
+          <img src="assets/icons/icon-linkedin.svg" alt="LinkedIn" />
+        </a>
+        <a href="#" class="nav__mobile-social-link" aria-label="Instagram">
+          <img src="assets/icons/icon-instagram.svg" alt="Instagram" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         ARTICLE — Story detail (Project Fuel)
+         ============================================================ -->
+    <article class="article" id="article">
+
+      <!-- background: soft blur glows (behind everything) -->
+      <div class="article__decor" aria-hidden="true">
+        <img src="assets/images/blur_04.png" alt="" class="article__blur article__blur--a" />
+        <img src="assets/images/blur_01.png" alt="" class="article__blur article__blur--b" />
+        <img src="assets/images/blur_04.png" alt="" class="article__blur article__blur--c" />
+        <img src="assets/images/blur_01.png" alt="" class="article__blur article__blur--d" />
+      </div>
+
+      <!-- ── header: breadcrumb · title · subtitle · tags ────────── -->
+      <header class="article__head">
+
+        <nav class="listing__crumb article__crumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="listing__crumb-sep">/</span>
+          <div class="listing__crumb-drop" data-dropdown>
+            <button class="listing__crumb-toggle" type="button" aria-expanded="false">
+              Impact
+              <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="listing__crumb-menu" role="menu">
+              <a href="#" role="menuitem">Our Stories</a>
+              <a href="#" role="menuitem">News</a>
+              <a href="#" role="menuitem">Learning</a>
+            </div>
+          </div>
+          <span class="listing__crumb-sep">/</span>
+          <div class="listing__crumb-drop" data-dropdown>
+            <button class="listing__crumb-toggle" type="button" aria-expanded="false">
+              Our stories
+              <svg class="listing__chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="listing__crumb-menu" role="menu">
+              <a href="Listing.html" role="menuitem">All stories</a>
+              <a href="#" role="menuitem">Mindful Living</a>
+              <a href="#" role="menuitem">Wellbeing</a>
+            </div>
+          </div>
+          <span class="listing__crumb-sep">/</span>
+        </nav>
+
+        <h1 class="article__title">Project Fuel</h1>
+        <p class="article__subtitle">Impact Strategy</p>
+
+        <ul class="article__tags">
+          <li><button type="button" class="article__tag">Issues-focused</button></li>
+          <li><button type="button" class="article__tag">Impact Strategy</button></li>
+          <li><button type="button" class="article__tag">Capacity Building</button></li>
+          <li><button type="button" class="article__tag">Catalyst for Collaboration</button></li>
+        </ul>
+      </header>
+
+      <!-- ── body: main column + related sidebar ─────────────────── -->
+      <div class="article__body">
+
+        <!-- ───────── main column ───────── -->
+        <div class="article__main">
+
+          <div class="article__main-head">
+            <h2 class="article__section-title">Sustaining Nonprofits through Challenging Times</h2>
+            <button class="article__send" type="button" aria-label="Send this story"
+                    data-send-title="Project Fuel — The D. H. Chen Foundation"
+                    data-send-text="Sustaining Nonprofits through Challenging Times">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="6" cy="12" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="17.5" cy="6" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="17.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+                <path d="m8.2 10.8 7.1-3.6M8.2 13.2l7.1 3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <p class="article__text">The COVID-19 pandemic has been causing devastating disruption on our society and economy worldwide, which in turn causes impact on the charitable sector. Many nonprofits are struggling to stay afloat when the economic downturn triggers the cancellation of fundraising events as well as a decline in private contributions from individuals who are less inclined or able to give.</p>
+
+          <p class="article__text">At times like this, however, the local community needs even more support from nonprofits to provide a safety net of various services than ever before. To weather the storm together as a companion, The D. H. Chen Foundation (“the Foundation”) initiated Project Fuel (“the Project”) which provides emergency financial support to its selected Hong Kong’s small-sized, non-subvented nonprofits (“the Awardees”) in order to maintain their core operations amid this challenging moment.</p>
+
+          <!-- image carousel -->
+          <figure class="article__figure" data-carousel>
+            <div class="article__figure-media">
+              <img src="assets/images/art-fuel-main.png" alt="Project Fuel 3.0 awardees at the Session 0 of Fellowship" />
+            </div>
+            <figcaption class="article__figcaption">
+              <span class="article__caption">Project Fuel 3.0 awardees at the Session 0 of Fellowship</span>
+              <span class="article__carousel-nav">
+                <button class="article__carousel-arrow article__carousel-arrow--prev" type="button" aria-label="Previous image">
+                  <svg viewBox="0 0 20 12" fill="none" aria-hidden="true"><path d="M19 6H1m0 0 5-5M1 6l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <span class="article__carousel-count"><span data-carousel-current>1</span><span class="article__carousel-bar">|</span><span data-carousel-total>3</span></span>
+                <button class="article__carousel-arrow article__carousel-arrow--next" type="button" aria-label="Next image">
+                  <svg viewBox="0 0 20 12" fill="none" aria-hidden="true"><path d="M1 6h18m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </span>
+            </figcaption>
+          </figure>
+
+          <p class="article__text">Besides financial support, the Foundation understands the importance of nonprofits being able to survive this extraordinary period and also continue to thrive in the long run. The Project also includes a Fellowship component aiming to empower its Fellows to be more resilient in the face of adversity. Based on a co-learning and co-developing spirit, the activities of the Fellowship centre on building strong, trusting companionship among the Fellows. By sharing their strengths and weakness, as well as exploring collaborations, the Fellowship targets to tackle the pain points and challenges that nonprofits face on an everyday basis as a collective force.</p>
+
+          <!-- pull quote -->
+          <blockquote class="article__quote">
+            <img class="article__quote-mark" src="assets/icons/icon-quote.svg" alt="" aria-hidden="true" />
+            <p>Care for others as well as you would care for yourself.</p>
+          </blockquote>
+
+          <!-- two images side by side -->
+          <div class="article__duo">
+            <div class="article__duo-media"><img src="assets/images/art-fuel-duo-1.png" alt="" /></div>
+            <div class="article__duo-media"><img src="assets/images/art-fuel-duo-2.jpg" alt="" /></div>
+          </div>
+
+          <p class="article__text">At times like this, however, the local community needs even more support from nonprofits to provide a safety net of various services than ever before. To weather the storm together as a companion, The D. H. Chen Foundation (“the Foundation”) initiated Project Fuel (“the Project”) which provides emergency financial support to its selected Hong Kong’s small-sized, non-subvented nonprofits (“the Awardees”) in order to maintain their core operations amid this challenging moment.</p>
+
+          <!-- video -->
+          <div class="article__video">
+            <img src="assets/images/art-fuel-video.png" alt="Project Fuel Fellowship highlights" />
+            <button class="article__play" type="button" aria-label="Play video"></button>
+          </div>
+
+          <p class="article__text">Besides financial support, the Foundation understands the importance of nonprofits being able to survive this extraordinary period and also continue to thrive in the long run. The Project also includes a Fellowship component aiming to empower its Fellows to be more resilient in the face of adversity.</p>
+
+          <!-- related-project pills -->
+          <div class="article__btn-row">
+            <a href="#" class="article__pill">
+              <span class="article__pill-circle">
+                <svg viewBox="0 0 15 8" aria-hidden="true"><path d="M0 4h13M9.5 1 13 4l-3.5 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span>Project Fuel 1.0</span>
+            </a>
+            <a href="#" class="article__pill">
+              <span class="article__pill-circle">
+                <svg viewBox="0 0 15 8" aria-hidden="true"><path d="M0 4h13M9.5 1 13 4l-3.5 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span>Project Fuel 2.0</span>
+            </a>
+          </div>
+
+          <!-- orange highlight box -->
+          <div class="article__highlight">
+            <img class="article__highlight-icon" src="assets/icons/icon-goal.svg" alt="" aria-hidden="true" />
+            <p>Based on a co-learning and co-developing spirit, the activities of the Fellowship centre on building strong, trusting companionship among the Fellows. By sharing their strengths and weakness, as well as exploring collaborations, the Fellowship targets to tackle the pain points and challenges that nonprofits face on an everyday basis as a collective force.</p>
+          </div>
+
+          <p class="article__text">Besides financial support, the Foundation understands the importance of nonprofits being able to survive this extraordinary period and also continue to thrive in the long run. The Project also includes a Fellowship component aiming to empower its Fellows to be more resilient in the face of adversity. With various opportunities offered to build the Fellows’ capacities, the Foundation hopes the Fellows would become stronger even under a new normal and help foster a healthy and long-term development within the nonprofits, as well as collaboration among like-minded stakeholders to drive bigger impact and meet urgent needs of our community.</p>
+
+          <!-- download -->
+          <a href="#" class="article__download">
+            <span class="article__download-circle">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 1.5v8m0 0L4.8 6.3M8 9.5l3.2-3.2M2.5 13.5h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Download Report</span>
+          </a>
+
+          <!-- testimonial -->
+          <figure class="article__testimonial">
+            <img class="article__testimonial-mark" src="assets/icons/icon-quote-sm.svg" alt="" aria-hidden="true" />
+            <div class="article__testimonial-avatar"><img src="assets/images/art-merryso.png" alt="Merry So" /></div>
+            <blockquote class="article__testimonial-quote">
+              Based on a co-learning and co-developing spirit, the activities of the Fellowship centre on building strong, trusting companionship among the Fellows. By sharing their strengths and weakness, as well as exploring collaborations, the Fellowship targets to tackle the pain points and challenges that nonprofits face on an everyday basis as a collective force.
+            </blockquote>
+            <figcaption class="article__testimonial-author">
+              <span class="article__testimonial-name">Merry So</span>
+              <span class="article__testimonial-role">Our partner from HKTDC</span>
+            </figcaption>
+          </figure>
+
+        </div>
+
+        <!-- ───────── related sidebar ───────── -->
+        <aside class="article__related" aria-label="Related articles">
+         <div class="article__related-inner">
+          <h2 class="article__related-title">Related Articles</h2>
+
+          <a href="#" class="article__related-item">
+            <div class="article__related-text">
+              <h3 class="article__related-name">Breaking Borders</h3>
+              <p class="article__related-desc">From Nonprofit to Profit for Good</p>
+            </div>
+          </a>
+
+          <a href="#" class="article__related-item">
+            <div class="article__related-text">
+              <h3 class="article__related-name">Compassionate Social Good Community</h3>
+              <p class="article__related-desc">Bringing the Social Good Community Closer</p>
+            </div>
+            <div class="article__related-thumb"><img src="assets/images/art-related-compassionate.jpg" alt="" /></div>
+          </a>
+
+          <a href="#" class="article__related-item">
+            <div class="article__related-text">
+              <h3 class="article__related-name">PILnet – Legal Health Check Programme</h3>
+              <p class="article__related-desc">Strengthening the Resilience of Social Purpose Organisations in Hong Kong</p>
+            </div>
+            <div class="article__related-thumb"><img src="assets/images/art-related-pilnet.png" alt="" /></div>
+          </a>
+
+          <a href="#" class="article__related-item">
+            <div class="article__related-text">
+              <h3 class="article__related-name">Just Feel</h3>
+              <p class="article__related-desc">Promoting Compassionate Communication &amp; Social and Emotional Learning in Schools and Families</p>
+            </div>
+          </a>
+         </div>
+        </aside>
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <!-- ============================================================
+       05 — FOOTER
+       ============================================================ -->
+  <footer class="footer" id="footer">
+
+    <div class="footer__inner">
+
+      <div class="footer__logo">
+        <img src="assets/icons/logo-footer.svg" alt="D. H. Chen Foundation" />
+      </div>
+
+      <div class="footer__col">
+        <nav class="footer__nav" aria-label="Footer navigation">
+          <a href="#" class="footer__nav-link">Partner with us</a>
+          <a href="#" class="footer__nav-link">Stay connected</a>
+          <a href="#" class="footer__nav-link">Join our team</a>
+        </nav>
+
+        <div class="footer__social">
+          <a href="#" class="footer__social-link" aria-label="LinkedIn">
+            <img src="assets/icons/icon-linkedin.svg" alt="LinkedIn" />
+          </a>
+          <a href="#" class="footer__social-link" aria-label="Instagram">
+            <img src="assets/icons/icon-instagram.svg" alt="Instagram" />
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer__legal-nav" aria-label="Legal navigation">
+        <a href="#" class="footer__legal-link">Privacy Policy</a>
+        <a href="#" class="footer__legal-link">Disclaimer</a>
+        <a href="#" class="footer__legal-link">Sitemap</a>
+        <a href="#" class="footer__legal-link">Accessibility</a>
+      </nav>
+
+    </div>
+
+    <div class="footer__copyright">
+      <p>
+        <span class="footer__copy-line">© 2026 The D. H. Chen Foundation. All rights reserved</span><span class="footer__copy-sep">&nbsp;&nbsp;|&nbsp;&nbsp;</span><span class="footer__copy-line"><a href="https://www.assembly.com.hk" class="footer__credit" target="_blank" rel="noopener">Website designed by Assembly</a></span>
+      </p>
+    </div>
+
+  </footer>
+
+  <!-- Custom cursor (desktop pointers only; script enables it) -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor__label">DISCOVER</span>
+    <img class="cursor__arrow" src="assets/icons/icon-arrow.svg" alt="" />
+  </div>
+
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
