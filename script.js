@@ -63,8 +63,17 @@
     if (window.__lenis) { open ? window.__lenis.stop() : window.__lenis.start(); }
   }
 
+  /* set the circular-reveal origin to the centre of whatever opened the overlay */
+  function setRevealOrigin(target, originEl) {
+    const r = originEl.getBoundingClientRect();
+    target.style.setProperty('--reveal-x', ((r.left + r.width / 2) / window.innerWidth * 100) + '%');
+    target.style.setProperty('--reveal-y', ((r.top + r.height / 2) / window.innerHeight * 100) + '%');
+  }
+
   btn.addEventListener('click', function () {
-    setOpen(!menu.classList.contains('nav__mobile-menu--open'));
+    const willOpen = !menu.classList.contains('nav__mobile-menu--open');
+    if (willOpen) setRevealOrigin(menu, btn);
+    setOpen(willOpen);
   });
   if (close) close.addEventListener('click', function () { setOpen(false); });
 
@@ -130,6 +139,10 @@
         document.body.classList.remove('menu-open');       /* drop the white-menu cursor state */
         if (burger) burger.setAttribute('aria-expanded', 'false');
       }
+      /* circular reveal radiating from the clicked search button */
+      var r = b.getBoundingClientRect();
+      overlay.style.setProperty('--reveal-x', ((r.left + r.width / 2) / window.innerWidth * 100) + '%');
+      overlay.style.setProperty('--reveal-y', ((r.top + r.height / 2) / window.innerHeight * 100) + '%');
       setOpen(true);
     });
   });
@@ -797,14 +810,19 @@
        Plain-text nav links have no padded box of their own, so give them a
        roomier wrap instead of hugging the glyphs. */
     const navLink = el.matches && el.matches('.nav__link, .nav__lang');
+    /* the nav search button gets a 20% bigger ring on hover — but not in the
+       shrunk sticky state */
+    const navEl = document.getElementById('nav');
+    const boost = (el.matches && el.matches('.nav__search-btn') &&
+                   !(navEl && navEl.classList.contains('nav--scrolled'))) ? 1.2 : 1;
     if (!navLink && Math.abs(w - h) < 12) {
       /* near-square targets (e.g. the search icon) get a perfect circle */
-      const s = Math.round(Math.max(w, h) + 9);
+      const s = Math.round((Math.max(w, h) + 9) * boost);
       cursor.style.width  = s + 'px';
       cursor.style.height = s + 'px';
     } else {
-      cursor.style.width  = Math.round(w + (navLink ? 24 : 9)) + 'px';
-      cursor.style.height = Math.round(h + (navLink ? 16 : 9)) + 'px';
+      cursor.style.width  = Math.round((w + (navLink ? 24 : 9)) * boost) + 'px';
+      cursor.style.height = Math.round((h + (navLink ? 16 : 9)) * boost) + 'px';
     }
   }
   function release() {

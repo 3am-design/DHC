@@ -450,7 +450,7 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
 
 /* Mobile menu — full-screen orange overlay (mobile only) */
 .nav__mobile-menu {
-  display: none;
+  display: flex;
   position: fixed;
   inset: 0;
   z-index: 200;                 /* above the fixed nav (100) */
@@ -460,8 +460,16 @@ body.lp-nav .nav__actions { opacity: 0; translate: 0 -18px; }
   padding: 0 var(--gm-mob) calc(env(safe-area-inset-bottom) + 28px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* circular reveal radiating from the hamburger (JS sets --reveal-x/y) */
+  visibility: hidden;
+  clip-path: circle(0% at var(--reveal-x, 92%) var(--reveal-y, 6%));
+  transition: clip-path 0.85s cubic-bezier(0.7, 0, 0.3, 1), visibility 0s linear 0.85s;
 }
-.nav__mobile-menu--open { display: flex; }
+.nav__mobile-menu--open {
+  visibility: visible;
+  clip-path: circle(150% at var(--reveal-x, 92%) var(--reveal-y, 6%));
+  transition: clip-path 0.85s cubic-bezier(0.7, 0, 0.3, 1);   /* slow-start, smooth */
+}
 
 /* Top bar inside the overlay: 中文 left · search + close right */
 .nav__mobile-bar {
@@ -613,14 +621,15 @@ button.nav__mobile-link {
   inset: 0;
   z-index: 300;                 /* above nav (100) and mobile menu (200) */
   background: var(--c-orange);
-  opacity: 0;
   visibility: hidden;
-  transition: opacity 0.32s ease, visibility 0s linear 0.32s;
+  /* circular reveal radiating from the search button (JS sets --reveal-x/y) */
+  clip-path: circle(0% at var(--reveal-x, 90%) var(--reveal-y, 6%));
+  transition: clip-path 0.8s cubic-bezier(0.7, 0, 0.3, 1), visibility 0s linear 0.8s;
 }
 .search-overlay--open {
-  opacity: 1;
   visibility: visible;
-  transition: opacity 0.32s ease;
+  clip-path: circle(150% at var(--reveal-x, 90%) var(--reveal-y, 6%));
+  transition: clip-path 0.8s cubic-bezier(0.7, 0, 0.3, 1);   /* slow-start, smooth */
 }
 /* top bar mirrors .nav__inner exactly, so the logo lines up with the nav logo
    and the close sits on the same right-hand grid margin */
@@ -689,6 +698,9 @@ button.nav__mobile-link {
   color: var(--c-white);
 }
 .search-overlay__input::placeholder { color: var(--c-white); opacity: 1; }
+/* drop the browser's native clear (×) / decoration inside the search field */
+.search-overlay__input::-webkit-search-cancel-button,
+.search-overlay__input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
 .search-overlay__label {
   margin-top: 26px;
   font-family: var(--f-sans);
@@ -898,7 +910,14 @@ button.nav__mobile-link {
 }
 /* line ends right at the fold — it doesn't run into the white section */
 .hero__scroll-line { width: 1px; height: 33px; flex-shrink: 0; background: var(--c-orange); margin-top: 4px; }
-.hero__scroll-dot  { width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0; }
+.hero__scroll-dot  {
+  width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0;
+  animation: scrollDotPulse 1.6s ease-in-out infinite;   /* gentle blink → hints "scroll down" */
+}
+@keyframes scrollDotPulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.25; transform: scale(0.6); }
+}
 
 
 /* ----------------------------------------------------------------
@@ -1374,7 +1393,8 @@ button.nav__mobile-link {
 .approach-dot--5  { --fx:-11px; --fy:   6px; --fd: 9.5s; --fdl: -0.8s; }
 .approach-dot--6  { --fx:  7px; --fy: -10px; --fd: 7.8s; --fdl: -5.5s; }
 @media (prefers-reduced-motion: reduce) {
-  .pillar-bubble, .approach-dot { animation: none; }
+  .pillar-bubble, .approach-dot, .hero__scroll-dot { animation: none; }
+  .nav__mobile-item.is-open .nav__mobile-sub a { animation: none; }
 }
 
 /* White cards — row 2: card 4 in col 1, card 5 in col 2, col 3 empty */
@@ -3062,7 +3082,7 @@ button.nav__mobile-link {
   pointer-events: none;
   transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
 }
-.nav--scrolled .nav__mega { top: 60px; }   /* follows the shrunk nav */
+.nav--scrolled .nav__mega { top: 76px; }   /* follows the shrunk nav, with a small gap below it */
 .nav--mega-open .nav__mega {
   opacity: 1;
   visibility: visible;
