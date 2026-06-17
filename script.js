@@ -3,6 +3,11 @@
    ================================================================ */
 'use strict';
 
+/* Always (re)load at the top of the page — stop the browser from restoring
+   the previous scroll position on refresh / back-forward navigation. */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
 /* ----------------------------------------------------------------
    0. Lenis smooth scrolling — inertia-smoothed wheel/touch scroll.
    Native scroll events still fire, so the nav, wave and hero-scene

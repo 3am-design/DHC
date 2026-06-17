@@ -280,7 +280,7 @@ body.search-open .cursor { border-color: var(--c-white); }
   justify-content: center;
   transition: opacity 0.6s ease;
 }
-.preloader img { height: 72px; width: auto; transition: opacity 0.5s ease; }
+.preloader img { height: var(--logo-h); width: auto; transition: opacity 0.5s ease; }  /* match the nav logo */
 .preloader.logo-out img { opacity: 0; }
 .preloader.out { opacity: 0; pointer-events: none; }
 
@@ -902,21 +902,33 @@ button.nav__mobile-link {
   height: 0;
   /* transform, not margin — a negative margin on a 0-height block
      collapses and drags the next section up over the hero */
-  transform: translateY(-41px);
+  transform: translateY(-44px);   /* dot(6) + gap(5) + line(33) = 44, so the line ends exactly at the fold */
   display: flex;
   flex-direction: column;
   align-items: center;
   pointer-events: none;
 }
 /* line ends right at the fold — it doesn't run into the white section */
-.hero__scroll-line { width: 1px; height: 33px; flex-shrink: 0; background: var(--c-orange); margin-top: 4px; }
+.hero__scroll-line { width: 1px; height: 33px; flex-shrink: 0; background: var(--c-orange); opacity: 0.7; margin-top: 5px; }   /* 30% lighter than the dot/ring */
 .hero__scroll-dot  {
-  width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0;
-  animation: scrollDotPulse 1.6s ease-in-out infinite;   /* gentle blink → hints "scroll down" */
+  position: relative;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0;
 }
-@keyframes scrollDotPulse {
-  0%, 100% { opacity: 1;    transform: scale(1); }
-  50%      { opacity: 0.25; transform: scale(0.6); }
+/* outer ring — pulses lighter/darker in place (no scaling) to hint "scroll down".
+   Even sizes keep translate(-50%,-50%) on whole pixels so the dot stays centred. */
+.hero__scroll-dot::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 16px; height: 16px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid var(--c-orange);
+  animation: scrollRingPulse 1.7s ease-in-out infinite;
+}
+@keyframes scrollRingPulse {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 1; }
 }
 
 
@@ -1393,7 +1405,7 @@ button.nav__mobile-link {
 .approach-dot--5  { --fx:-11px; --fy:   6px; --fd: 9.5s; --fdl: -0.8s; }
 .approach-dot--6  { --fx:  7px; --fy: -10px; --fd: 7.8s; --fdl: -5.5s; }
 @media (prefers-reduced-motion: reduce) {
-  .pillar-bubble, .approach-dot, .hero__scroll-dot { animation: none; }
+  .pillar-bubble, .approach-dot, .hero__scroll-dot::before { animation: none; }
   .nav__mobile-item.is-open .nav__mobile-sub a { animation: none; }
 }
 
@@ -1892,8 +1904,8 @@ button.nav__mobile-link {
   /* dots must shrink with the planes (200/300) — desktop 22px → ~15px,
      otherwise the flying dots look oversized next to the photos */
   .hero__plane--dot { width: 15px; height: 15px; }
-  .hero__scroll { transform: translateY(-63px); }   /* Figma mobile: dot 63px above the fold */
-  .hero__scroll-line { height: 54px; }              /* ends at the fold */
+  .hero__scroll { transform: translateY(-49px); }   /* dot(6)+gap(5)+line(38)=49, ends at the fold */
+  .hero__scroll-line { height: 38px; }              /* ~30% shorter on mobile */
   .hero__headline-wrap { width: 350px; top: 36%; }
   .hero__headline  { font-size: 43px; line-height: 47px; }
   .hero__headline br { display: none; }   /* natural wrap matches Figma mobile */
