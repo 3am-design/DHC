@@ -215,10 +215,10 @@ body.has-custom-cursor .story-card__tag { cursor: none; }
   left: 0;
   top: 0;
   z-index: 9999;
-  width: 26px;
-  height: 26px;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
-  border: 2.5px solid var(--c-orange);   /* thick orange ring */
+  border: 6px solid var(--c-orange);   /* thick orange ring */
   background: transparent;
   display: none;                /* shown when the script enables it */
   align-items: center;
@@ -226,7 +226,8 @@ body.has-custom-cursor .story-card__tag { cursor: none; }
   pointer-events: none;
   will-change: transform;
   transition: width 0.22s ease, height 0.22s ease, opacity 0.25s ease,
-              background-color 0.1s ease, border-color 0.1s ease;
+              background-color 0.1s ease, border-color 0.1s ease,
+              border-width 0.18s ease;
 }
 body.has-custom-cursor .cursor { display: flex; }
 /* white mobile menu keeps the base orange ring; only the orange search
@@ -252,8 +253,10 @@ body.search-open .cursor { border-color: var(--c-white); }
   transition: opacity 0.2s ease;
 }
 
-/* magnetised onto a button — size is set inline to wrap the target */
-.cursor--magnet   { background: transparent; }
+/* magnetised onto a button — size is set inline to wrap the target. The
+   stroke thins back to 2.5px so the ring reads as a slim frame around the
+   target (and keeps the +9 wrap math in engage() correct). */
+.cursor--magnet   { background: transparent; border-width: 2.5px; }
 
 /* nav links / 中文 / search use plain colour hovers (see NAVIGATION) */
 
