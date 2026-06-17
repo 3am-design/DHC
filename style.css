@@ -15,8 +15,12 @@
   --c-black:   #000000;
   --c-orange:  #ff6900;
 
-  /* Fonts — Figma uses system Baskerville; Libre Baskerville is the web fallback */
-  --f-serif: Baskerville, 'Libre Baskerville', Georgia, serif;
+  /* Fonts — Figma uses system Baskerville; Libre Baskerville is the web fallback.
+     Latin glyphs render in Baskerville; CJK glyphs fall through to a real Song
+     serif — Noto Serif TC webfont (loaded on the TC pages) first, then each
+     platform's system Song (iOS Songti, Android/desktop Noto/Source Han, Windows
+     SimSun/PMingLiU). Without these, iOS maps generic `serif` to PingFang (sans). */
+  --f-serif: Baskerville, 'Libre Baskerville', Georgia, 'Noto Serif TC', 'Noto Serif CJK TC', 'Source Han Serif TC', 'Songti TC', 'Songti SC', 'PMingLiU', 'MingLiU', SimSun, serif;
   --f-sans:  'Fira Sans', Arial, sans-serif;
 
   /* Grid — desktop */
