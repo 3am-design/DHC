@@ -3173,6 +3173,23 @@ button.nav__mobile-link {
 @media (max-width: 900px) { .nav__mega { display: none; } }
 
 /* ============================================================
+   CHINESE (zh-Hant) — SERIF FONT STACK
+   ------------------------------------------------------------
+   iOS Safari (WebKit) bug: when the first family in a stack is a
+   real system font (Baskerville), WebKit renders missing glyphs
+   (CJK) with *Baskerville's own* system fallback — PingFang, a
+   sans — instead of continuing down the author's list. So the
+   Chinese never reaches Noto Serif TC / Songti and shows as sans.
+   Fix: on the TC pages, lead the serif stack with the CJK serif
+   (webfont first, then each platform's system Song). The few Latin
+   tokens in these headings render in Noto Serif TC's Latin, which
+   is consistent on a Chinese page. English pages keep Baskerville
+   first (the base --f-serif), untouched. */
+html[lang="zh-Hant"] {
+  --f-serif: 'Noto Serif TC', 'Songti TC', 'Songti SC', 'Source Han Serif TC', 'Noto Serif CJK TC', 'PMingLiU', 'MingLiU', SimSun, Baskerville, 'Libre Baskerville', Georgia, serif;
+}
+
+/* ============================================================
    CHINESE (zh-Hant) — SERIF HEADING TRIM
    ------------------------------------------------------------
    The big Baskerville headings fall back to a CJK serif (宋體)
