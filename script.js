@@ -814,22 +814,23 @@ window.scrollTo(0, 0);
     cursor.classList.add('cursor--magnet');
     /* hug the target tightly — ~2px gap (the ring is border-box with a 2.5px
        border, so +9 on each dimension leaves about 2px of clearance).
-       Plain-text nav links have no padded box of their own, so give them a
-       roomier wrap instead of hugging the glyphs. */
-    const navLink = el.matches && el.matches('.nav__link, .nav__lang');
+       Plain-text links/tabs have no padded box of their own, so give them a
+       roomier wrap instead of hugging the glyphs — the sticky nav links and
+       the news filter tabs (All / Learning / Stories / News). */
+    const roomy = el.matches && el.matches('.nav__link, .nav__lang, .news__filter');
     /* the nav search button gets a 20% bigger ring on hover — but not in the
        shrunk sticky state */
     const navEl = document.getElementById('nav');
     const boost = (el.matches && el.matches('.nav__search-btn') &&
                    !(navEl && navEl.classList.contains('nav--scrolled'))) ? 1.2 : 1;
-    if (!navLink && Math.abs(w - h) < 12) {
+    if (!roomy && Math.abs(w - h) < 12) {
       /* near-square targets (e.g. the search icon) get a perfect circle */
       const s = Math.round((Math.max(w, h) + 9) * boost);
       cursor.style.width  = s + 'px';
       cursor.style.height = s + 'px';
     } else {
-      cursor.style.width  = Math.round((w + (navLink ? 24 : 9)) * boost) + 'px';
-      cursor.style.height = Math.round((h + (navLink ? 16 : 9)) * boost) + 'px';
+      cursor.style.width  = Math.round((w + (roomy ? 24 : 9)) * boost) + 'px';
+      cursor.style.height = Math.round((h + (roomy ? 16 : 9)) * boost) + 'px';
     }
   }
   function release() {
