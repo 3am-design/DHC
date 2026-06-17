@@ -3167,3 +3167,68 @@ button.nav__mobile-link {
 
 /* hover-menu is desktop-only; small screens use the hamburger overlay */
 @media (max-width: 900px) { .nav__mega { display: none; } }
+
+/* ============================================================
+   CHINESE (zh-Hant) — SERIF HEADING TRIM
+   ------------------------------------------------------------
+   The big Baskerville headings fall back to a CJK serif (宋體)
+   for Chinese, which renders heavier/larger at the same px.
+   Trim each serif heading down a touch (≈2–5px, proportional
+   to its size). Scoped to the TC pages via <html lang="zh-Hant">
+   and mirrored across every breakpoint so the English build and
+   the mobile layouts are untouched.
+   ============================================================ */
+html[lang="zh-Hant"] .hero__headline             { font-size: 65px; }
+html[lang="zh-Hant"] .pillars__heading           { font-size: 65px; }
+html[lang="zh-Hant"] .pillar-card__title         { font-size: 46px; }
+html[lang="zh-Hant"] .intro__foundation-headline { font-size: 36px; }
+html[lang="zh-Hant"] .news__heading              { font-size: 36px; }
+html[lang="zh-Hant"] .approach-card__title       { font-size: 29px; }
+html[lang="zh-Hant"] .challenge__circle-title    { font-size: clamp(15px, 7.4cqw, 29px); }
+html[lang="zh-Hant"] .nav__mobile-link           { font-size: 40px; }
+html[lang="zh-Hant"] .search-overlay__input      { font-size: 36px; }
+
+/* Hero description — keep glyphs/spacing normal but narrow the text column
+   ~20% so the line wraps earlier. max-width is relative to .hero__bottom,
+   and the block stays centred (text-align:center + auto margins). */
+html[lang="zh-Hant"] .hero__description { max-width: 80%; margin-left: auto; margin-right: auto; }
+
+/* Challenge headline — trim ~2px (句字收細 2pt) */
+html[lang="zh-Hant"] .challenge__headline { font-size: 28px; }
+
+@media (max-width: 1440px) {
+  html[lang="zh-Hant"] .hero__headline     { font-size: 54px; }
+  html[lang="zh-Hant"] .pillars__heading   { font-size: 52px; }
+  html[lang="zh-Hant"] .pillar-card__title { font-size: 39px; }
+}
+
+@media (min-width: 768px) and (max-height: 800px) {
+  html[lang="zh-Hant"] .hero__headline { font-size: 49px; }
+}
+
+@media (max-width: 1024px) {
+  html[lang="zh-Hant"] .hero__headline             { font-size: 43px; }
+  html[lang="zh-Hant"] .intro__foundation-headline { font-size: 29px; }
+  html[lang="zh-Hant"] .pillars__heading           { font-size: 43px; }
+  html[lang="zh-Hant"] .pillar-card__title         { font-size: 34px; }
+  html[lang="zh-Hant"] .approach-card__title       { font-size: 22px; }
+  html[lang="zh-Hant"] .challenge__headline        { font-size: clamp(20px, 2.4vw, 30px); }
+}
+
+@media (max-width: 767px) {
+  html[lang="zh-Hant"] .hero__headline             { font-size: 40px; }
+  html[lang="zh-Hant"] .intro__foundation-headline { font-size: 23px; }
+  html[lang="zh-Hant"] .pillars__heading           { font-size: 40px; }
+  html[lang="zh-Hant"] .pillar-card__title         { font-size: 28px; }
+  html[lang="zh-Hant"] .approach-card__title       { font-size: 20px; }
+  html[lang="zh-Hant"] .news__heading              { font-size: 23px; }
+}
+
+@media (max-width: 430px) {
+  html[lang="zh-Hant"] .hero__headline { font-size: 35px; }
+}
+
+@media (max-width: 390px) {
+  html[lang="zh-Hant"] .challenge__circle-title { font-size: 15px; }
+  html[lang="zh-Hant"] .hero__headline          { font-size: 32px; }
+}

@@ -472,8 +472,10 @@ window.scrollTo(0, 0);
       if (x < CLICK_EDGE)     { if (window.newsSlider) window.newsSlider.prev(); return; }
       if (x > 1 - CLICK_EDGE) { if (window.newsSlider) window.newsSlider.next(); return; }
     }
-    /* middle → open the article */
-    if (hit && hit.closest('.news-card')) window.location.href = 'Articles.html';
+    /* middle → open the article (language-aware: TC pages stay in TC) */
+    if (hit && hit.closest('.news-card')) {
+      window.location.href = document.documentElement.lang === 'zh-Hant' ? 'Articles_tc.html' : 'Articles.html';
+    }
   });
 })();
 
@@ -1341,7 +1343,7 @@ window.scrollTo(0, 0);
   cards.forEach(function (card) {
     card.addEventListener('click', function (e) {
       if (e.target.closest('.story-card__tag')) return;   /* tags inert */
-      window.location.href = 'Articles.html';
+      window.location.href = document.documentElement.lang === 'zh-Hant' ? 'Articles_tc.html' : 'Articles.html';
     });
   });
 })();
