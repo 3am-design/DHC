@@ -843,7 +843,8 @@ window.scrollTo(0, 0);
        the mobile menu + search overlay use an underline-draw hover instead of
        the cursor frame */
     if (el.closest('.listing__filters') || el.closest('.listing__crumb') ||
-        el.closest('.nav__mobile-menu') || el.closest('.search-overlay')) return;
+        el.closest('.nav__mobile-menu') ||
+        (el.closest('.search-overlay') && !el.matches('.search-overlay__close'))) return;
     el.addEventListener('mouseenter', function () { engage(el); });
     el.addEventListener('mouseleave', release);
   });
