@@ -230,9 +230,15 @@ body.has-custom-cursor .story-card__tag { cursor: none; }
               border-width 0.18s ease;
 }
 body.has-custom-cursor .cursor { display: flex; }
-/* white mobile menu keeps the base orange ring; only the orange search
-   overlay needs a white ring so it doesn't vanish */
-body.search-open .cursor { border-color: var(--c-white); }
+/* On orange surfaces the orange dot vanishes → flip the dot white. The ring
+   that grows on hover (magnet) keeps a transparent fill + white border, so we
+   only whiten the *fill* when not wrapping a target.
+   Covers the full-screen search overlay and any orange content block tagged
+   with the .cursor-dark hook (see script.js). */
+body.search-open .cursor,
+.cursor--on-dark { border-color: var(--c-white); }
+body.search-open .cursor:not(.cursor--magnet),
+.cursor--on-dark:not(.cursor--magnet) { background: var(--c-white); }
 
 .cursor__label {
   position: absolute;

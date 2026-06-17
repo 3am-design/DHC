@@ -849,6 +849,13 @@ window.scrollTo(0, 0);
     el.addEventListener('mouseleave', release);
   });
 
+  /* orange-background content blocks (article highlight, orange approach
+     cards): the orange dot would disappear, so flip it white while inside */
+  document.querySelectorAll('.article__highlight, .approach-card--orange').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { cursor.classList.add('cursor--on-dark'); });
+    el.addEventListener('mouseleave', function () { cursor.classList.remove('cursor--on-dark'); });
+  });
+
   /* listing story cards: big "DISCOVER" circle over the card body, but a
      plain (clickable) cursor over the individual tags */
   document.querySelectorAll('.story-card').forEach(function (card) {
