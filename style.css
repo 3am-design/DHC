@@ -215,11 +215,11 @@ body.has-custom-cursor .story-card__tag { cursor: none; }
   left: 0;
   top: 0;
   z-index: 9999;
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
-  border: 6px solid var(--c-orange);   /* thick orange ring */
-  background: transparent;
+  border: 0 solid var(--c-orange);   /* solid dot idle; ring grows on hover (magnet) */
+  background: var(--c-orange);        /* solid orange dot */
   display: none;                /* shown when the script enables it */
   align-items: center;
   justify-content: center;
